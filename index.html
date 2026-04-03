@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Lab Predictor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🍷 Wine Lab Predictor</h1>
+    </header>
+
+    <main>
+        <form id="wine-form" aria-labelledby="form-title">
+            <h2 id="form-title">Enter Wine Details</h2>
+            
+            <label for="grape">Grape Variety:</label>
+            <input type="text" id="grape" name="grape" placeholder="e.g. Aglianico" required>
+
+            <label for="region">Region/City:</label>
+            <input type="text" id="region" name="region" placeholder="e.g. Campania, Irpinia">
+
+            <button type="submit">Predict Our Scores</button>
+        </form>
+
+        <section id="results" aria-live="polite">
+            <div id="colleen-score"></div>
+            <div id="boyfriend-score"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
