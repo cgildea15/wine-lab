@@ -1,0 +1,16 @@
+/* Mobile-First: Make labels block-level so they sit on top of the inputs */
+label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #4a0e0e; /* A deep wine red for contrast */
+}
+
+input {
+    width: 100%; /* Full width for easy thumb-tapping */
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding doesn't mess up width */
+}
