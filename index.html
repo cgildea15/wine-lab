@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <h1>🍷 Wine Predictor</h1>
+        <h1>🍷 Wine Lab Predictor</h1>
     </header>
 
     <main>
@@ -16,19 +16,16 @@
             <h2 id="form-title">Enter Wine Details</h2>
             
             <label for="labelName">Vineyard / Label Name:</label>
-            <input type="text" id="labelName" name="labelName" placeholder="e.g. Natura or Doris Find" required>
+            <input type="text" id="labelName" name="labelName" placeholder="e.g. Natura or Conte Rosso" required>
 
-            <label for="wineStyle">Wine Style / Grape Blend:</label>
+            <label for="wineStyle">Style / Blend:</label>
             <input type="text" id="wineStyle" name="wineStyle" placeholder="e.g. Rosé or Red Blend">
 
-            <label for="vintage">Vintage (Year):</label>
-            <input type="number" id="vintage" name="vintage" min="1900" max="2099" placeholder="2024">
-
             <label for="abv">ABV % (Alcohol):</label>
-            <input type="number" id="abv" name="abv" min="0" max="25" step="0.1" placeholder="e.g. 13.5">
+            <input type="number" id="abv" name="abv" step="0.1" placeholder="13.5">
 
             <label for="region">Region/City:</label>
-            <input type="text" id="region" name="region" placeholder="e.g. Chile or Italy">
+            <input type="text" id="region" name="region" placeholder="e.g. Marche, Italy">
 
             <label for="price">Price ($):</label>
             <input type="number" id="price" name="price" step="0.01" placeholder="15.99">
@@ -43,13 +40,26 @@
             <div id="feedback-section" style="display:none; margin-top:20px; border-top:2px solid #800020; padding-top:15px;">
                 <h3>Actual Tasting Results</h3>
                 
+                <label for="user-name">Who is tasting?</label>
+                <input type="text" id="user-name" placeholder="Colleen, Dave, or Brother?">
+
                 <fieldset style="border:none; padding:0; margin-bottom:1rem;">
-                    <legend style="font-weight:bold;">Was it Oaky/Smoky? (Dave's Trigger)</legend>
+                    <legend style="font-weight:bold;">Was it Oaky/Smoky?</legend>
                     <label class="switch">
                         <input type="checkbox" id="actualOaky">
                         <span class="slider round"></span>
                     </label>
                 </fieldset>
+
+                <label for="tastingNotes">What do you taste? (Optional):</label>
+                <input type="text" id="tastingNotes" placeholder="e.g. 🍓 Strawberry, minerals, tobacco">
+
+                <label for="flavorVibe">Overall Vibe:</label>
+                <select id="flavorVibe" style="width:100%; padding:10px; margin-bottom:15px;">
+                    <option value="balanced">Balanced / Neutral</option>
+                    <option value="loved">Loved the Flavors!</option>
+                    <option value="disliked">Flavors weren't for me</option>
+                </select>
 
                 <fieldset style="border:none; padding:0; margin-bottom:1rem;">
                     <legend style="font-weight:bold;">Would Buy Again?</legend>
@@ -62,18 +72,25 @@
                 <label for="actual-rating">Final Lab Rating (1-10):</label>
                 <input type="number" id="actual-rating" min="1" max="10" step="0.1" placeholder="7.0">
                 
-                <button id="save-rating" style="background-color: #4a0e0e; margin-top:15px;">Confirm & Save to History</button>
+                <button id="save-rating" style="background-color: #4a0e0e; margin-top:15px; color:white; border:none; padding:12px; border-radius:5px; cursor:pointer; width:100%;">Confirm & Save to History</button>
 
-                <div id="scale-legend" style="margin-top:25px; font-size: 0.85rem; color: #555; background: #f9f9f9; padding: 10px; border-radius: 5px;">
-                    <p><strong>The Scale:</strong></p>
-                    <ul style="list-style: none; padding: 0;">
-                        <li>🦄 <strong>10: Unicorn</strong> - Life-changing unicorn</li>
-                        <li>💎 <strong>9: Icon</strong> - Delicious, likely expensive </li>
-                        <li>🍷 <strong>7-8: Reliable/Utility</strong> - Great value, repeat buy</li>
-                        <li>🍕 <strong>5-6: Everyday</strong> - Cheap & Cheerful, but one-and-done</li>
-                        <li>❌ <strong><5: Avoid</strong> - Slap that Franzia bag! </li>
+                <div id="scale-legend" style="margin-top:25px; font-size: 0.85rem; color: #555; background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #800020;">
+                    <p style="margin-top:0; font-weight:bold; color:#800020;">🧪 The Lab Rating Guide:</p>
+                    <ul style="list-style: none; padding: 0; margin-bottom: 0;">
+                        <li style="margin-bottom: 8px;">🦄 <strong>10: Unicorn</strong> - Life-changing unicorn</li>
+                        <li style="margin-bottom: 8px;">💎 <strong>9: Icon</strong> - Delicious, likely expensive </li>
+                        <li style="margin-bottom: 8px;">🍷 <strong>7-8: Reliable/Utility</strong> - Great value, repeat buy</li>
+                        <li style="margin-bottom: 8px;">🍕 <strong>5-6: Everyday</strong> - Cheap & Cheerful, but one-and-done</li>
+                        <li style="margin-bottom: 0;">❌ <strong>&lt;5: Avoid</strong> - Slap that Franzia bag! </li>
                     </ul>
                 </div>
+            </div>
+        </section>
+
+        <section id="cellar-history" style="margin-top: 40px; padding: 20px; border-top: 3px double #800020;">
+            <h2 style="color: #4a0e0e; text-align: center;">📜 Recent Lab Discoveries</h2>
+            <div id="history-list" style="display: flex; flex-direction: column; gap: 15px;">
+                <p style="text-align: center; color: #999;">Loading the cellar...</p>
             </div>
         </section>
     </main>
