@@ -1,4 +1,4 @@
-// 1. Firebase Config
+// 1. Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA2GxSOi1McA7frSXuiq66igVrAqB7kPqo",
   authDomain: "winelab-c2f76.firebaseapp.com",
@@ -17,10 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const wineForm = document.getElementById('wine-form');
     const feedbackSection = document.getElementById('feedback-section');
     const saveButton = document.getElementById('save-rating');
+    const predictBtn = document.getElementById('predict-btn');
 
-    // PHASE 1: PREDICT & LOG
+    // PHASE 1: PREDICT & INITIAL SAVE
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        // Prevent duplicate clicks
+        predictBtn.disabled = true;
+        predictBtn.innerText = "Saving to Lab...";
 
         const label = document.getElementById('labelName').value;
         const abv = parseFloat(document.getElementById('abv').value) || 0;
@@ -29,8 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let colleenScore = 7.0; 
         let daveScore = 7.0;
-
-        if (abv > 14.2) colleenScore -= 1.0;
+        if (abv > 14.2) { colleenScore -= 1.0; }
         if (region.includes('chile') || region.includes('italy') || region.includes('verona') || region.includes('marche')) {
             colleenScore += 1.0;
         }
@@ -46,19 +50,32 @@ document.addEventListener('DOMContentLoaded', () => {
             
             document.getElementById('colleen-score').innerHTML = `<h3>Colleen's Prediction: ${colleenScore.toFixed(1)}</h3>`;
             document.getElementById('dave-score').innerHTML = `<h3>Dave's Prediction: ${daveScore.toFixed(1)}</h3>`;
+            
+            // Pop-up Confirmation
+            alert("Entry Created! You can now enter tasting notes below.");
+            
             feedbackSection.style.display = "block"; 
-        } catch (error) { console.error(error); }
+            predictBtn.innerText = "Saved ✅";
+        } catch (error) { 
+            console.error("Firebase Error:", error);
+            alert("Error saving wine: " + error.message);
+            predictBtn.disabled = false;
+            predictBtn.innerText = "Predict Our Scores";
+        }
     });
 
-    // PHASE 2: FEEDBACK & FLAVORS
+    // PHASE 2: UPDATE WITH TASTING DATA
     saveButton.addEventListener('click', async () => {
         const finalRating = parseFloat(document.getElementById('actual-rating').value);
         const notes = document.getElementById('tastingNotes').value;
         const vibe = document.getElementById('flavorVibe').value;
         const buyAgain = document.getElementById('buyAgain').checked;
-        const taster = document.getElementById('user-name').value || "Unknown Lab Tech";
+        const taster = document.getElementById('user-name').value || "Colleen";
 
         if (currentPredictionId && !isNaN(finalRating)) {
+            saveButton.disabled = true;
+            saveButton.innerText = "Updating...";
+
             try {
                 await db.collection("wine_history").doc(currentPredictionId).update({
                     actualRating: finalRating,
@@ -68,11 +85,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     taster: taster,
                     wasOaky: document.getElementById('actualOaky').checked
                 });
-                alert("Lab History Updated! Cheers.");
+                
+                alert("Lab History Updated Successfully! 🍷");
+                
                 feedbackSection.style.display = "none";
                 wineForm.reset();
-            } catch (err) { console.error(err); }
-        } else { alert("Please enter a rating!"); }
+                predictBtn.disabled = false;
+                predictBtn.innerText = "Predict Our Scores";
+                saveButton.disabled = false;
+                saveButton.innerText = "Confirm & Save to History";
+            } catch (err) { 
+                console.error("Update Error:", err);
+                alert("Failed to update: " + err.message);
+                saveButton.disabled = false;
+            }
+        } else {
+            alert("Please enter a final rating (1-10) before saving!");
+        }
     });
 
     // 3. THE LIVE CELLAR LISTENER
