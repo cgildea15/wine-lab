@@ -1,4 +1,4 @@
-// 1. Firebase Configuration
+// 1. Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyA2GxSOi1McA7frSXuiq66igVrAqB7kPqo",
   authDomain: "winelab-c2f76.firebaseapp.com",
@@ -8,20 +8,17 @@ const firebaseConfig = {
   appId: "1:625162326304:web:e53604a064dca64d6d0745"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+let currentPredictionId = null; 
+
 document.addEventListener('DOMContentLoaded', () => {
     const wineForm = document.getElementById('wine-form');
-    const colleenDisplay = document.getElementById('colleen-score');
-    const daveDisplay = document.getElementById('dave-score');
     const feedbackSection = document.getElementById('feedback-section');
     const saveButton = document.getElementById('save-rating');
 
-    let currentPredictionId = null; 
-
-    // PHASE 1: PREDICTION
+    // PHASE 1: PREDICT & LOG
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -30,29 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const region = document.getElementById('region').value.toLowerCase();
         const price = parseFloat(document.getElementById('price').value) || 0;
 
-        // "Brain" Logic
         let colleenScore = 7.0; 
         let daveScore = 7.0;
-        let notes = [];
 
-        if (abv > 14.2) { 
-            colleenScore -= 1.0; 
-            notes.push("🔥 High ABV: Watch for 'burn'."); 
-        }
-        if (region.includes('chile') || region.includes('italy')) {
+        if (abv > 14.2) colleenScore -= 1.0;
+        if (region.includes('chile') || region.includes('italy') || region.includes('verona') || region.includes('marche')) {
             colleenScore += 1.0;
-            notes.push("🌊 Expecting mineral/saline notes.");
-        }
-        if (price > 0 && price < 15.00) {
-            notes.push("💸 Value check: Potentially high utility!");
         }
 
-        // Show scores on screen immediately
-        colleenDisplay.innerHTML = `<h3>Colleen's Prediction: ${colleenScore.toFixed(1)}</h3>`;
-        daveDisplay.innerHTML = `<h3>Dave's Prediction: ${daveScore.toFixed(1)}</h3><p>${notes.join('<br>')}</p>`;
-        feedbackSection.style.display = "block"; 
-
-        // Save to Firebase in background
         try {
             const docRef = await db.collection("wine_history").add({
                 label, abv, region, price,
@@ -61,34 +43,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             currentPredictionId = docRef.id;
-        } catch (error) {
-            console.error("Firebase Sync Error: ", error);
-        }
+            
+            document.getElementById('colleen-score').innerHTML = `<h3>Colleen's Prediction: ${colleenScore.toFixed(1)}</h3>`;
+            document.getElementById('dave-score').innerHTML = `<h3>Dave's Prediction: ${daveScore.toFixed(1)}</h3>`;
+            feedbackSection.style.display = "block"; 
+        } catch (error) { console.error(error); }
     });
 
-    // PHASE 2: UNIFIED FEEDBACK
+    // PHASE 2: FEEDBACK & FLAVORS
     saveButton.addEventListener('click', async () => {
-        const wasOaky = document.getElementById('actualOaky').checked;
-        const buyAgain = document.getElementById('buyAgain').checked;
         const finalRating = parseFloat(document.getElementById('actual-rating').value);
+        const notes = document.getElementById('tastingNotes').value;
+        const vibe = document.getElementById('flavorVibe').value;
+        const buyAgain = document.getElementById('buyAgain').checked;
+        const taster = document.getElementById('user-name').value || "Unknown Lab Tech";
 
         if (currentPredictionId && !isNaN(finalRating)) {
             try {
                 await db.collection("wine_history").doc(currentPredictionId).update({
                     actualRating: finalRating,
-                    wasOaky: wasOaky,
-                    buyAgain: buyAgain
+                    tastingNotes: notes,
+                    vibe: vibe,
+                    buyAgain: buyAgain,
+                    taster: taster,
+                    wasOaky: document.getElementById('actualOaky').checked
                 });
-                
-                alert("Lab History Updated! Sharing this data with the family.");
+                alert("Lab History Updated! Cheers.");
                 feedbackSection.style.display = "none";
                 wineForm.reset();
-                window.scrollTo(0, 0); // Reset view to top
-            } catch (err) {
-                console.error("Update Error: ", err);
-            }
-        } else {
-            alert("Please enter a rating from 1-10!");
-        }
+            } catch (err) { console.error(err); }
+        } else { alert("Please enter a rating!"); }
+    });
+
+    // 3. THE LIVE CELLAR LISTENER
+    db.collection("wine_history").orderBy("timestamp", "desc").limit(5).onSnapshot((snapshot) => {
+        const list = document.getElementById('history-list');
+        list.innerHTML = "";
+        snapshot.forEach((doc) => {
+            const w = doc.data();
+            const card = document.createElement('div');
+            card.style = "background:white; padding:15px; border-radius:8px; border-left: 5px solid #800020; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between;">
+                    <strong>${w.label}</strong>
+                    <span style="color:#800020; font-weight:bold;">⭐ ${w.actualRating || 'TBD'}</span>
+                </div>
+                <div style="font-size:0.8rem; color:#666;">
+                    ${w.taster ? 'By: ' + w.taster : ''} | ${w.tastingNotes ? '<i>"' + w.tastingNotes + '"</i>' : ''}
+                </div>
+            `;
+            list.appendChild(card);
+        });
     });
 });
