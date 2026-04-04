@@ -1,4 +1,4 @@
-// 1. Firebase Config
+// 1. Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA2GxSOi1McA7frSXuiq66igVrAqB7kPqo",
   authDomain: "winelab-c2f76.firebaseapp.com",
@@ -21,76 +21,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentPredictionId = null; 
 
+    // PHASE 1: PREDICTION
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        console.log("🚀 Logic Triggered");
 
-        // Collect inputs
         const label = document.getElementById('labelName').value;
         const abv = parseFloat(document.getElementById('abv').value) || 0;
         const region = document.getElementById('region').value.toLowerCase();
-        const style = document.getElementById('wineStyle').value.toLowerCase();
         const price = parseFloat(document.getElementById('price').value) || 0;
 
-        // PREDICTION LOGIC
-        let colleenScore = 7.5; 
-        let daveScore = 7.5;
+        // "Brain" Logic
+        let colleenScore = 7.0; 
+        let daveScore = 7.0;
         let notes = [];
 
         if (abv > 14.2) { 
             colleenScore -= 1.0; 
             notes.push("🔥 High ABV: Watch for 'burn'."); 
         }
-        if (region.includes('chile') || region.includes('italy') || region.includes('sicily')) {
+        if (region.includes('chile') || region.includes('italy')) {
             colleenScore += 1.0;
             notes.push("🌊 Expecting mineral/saline notes.");
         }
+        if (price > 0 && price < 15.00) {
+            notes.push("💸 Value check: Potentially high utility!");
+        }
 
-        // 1. UPDATE SCREEN IMMEDIATELY (Don't wait for database)
+        // Show scores on screen immediately
         colleenDisplay.innerHTML = `<h3>Colleen's Prediction: ${colleenScore.toFixed(1)}</h3>`;
         daveDisplay.innerHTML = `<h3>Dave's Prediction: ${daveScore.toFixed(1)}</h3><p>${notes.join('<br>')}</p>`;
         feedbackSection.style.display = "block"; 
-        console.log("🖥️ Display Updated");
 
-        // 2. SAVE TO DATABASE IN BACKGROUND
+        // Save to Firebase in background
         try {
             const docRef = await db.collection("wine_history").add({
-                label, abv, region, style, price,
+                label, abv, region, price,
                 predictedColleen: colleenScore,
                 predictedDave: daveScore,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             currentPredictionId = docRef.id;
-            console.log("✅ Firebase Sync Successful: ", currentPredictionId);
         } catch (error) {
-            console.error("❌ Firebase Sync Failed: ", error);
-            // We don't alert here so the user can still enjoy the app even if offline
+            console.error("Firebase Sync Error: ", error);
         }
     });
 
-    // PHASE 2: FEEDBACK (THE LEARNING LOOP)
+    // PHASE 2: UNIFIED FEEDBACK
     saveButton.addEventListener('click', async () => {
         const wasOaky = document.getElementById('actualOaky').checked;
         const buyAgain = document.getElementById('buyAgain').checked;
-        const realColleen = parseFloat(document.getElementById('actual-colleen').value);
-        const realDave = parseFloat(document.getElementById('actual-dave').value);
+        const finalRating = parseFloat(document.getElementById('actual-rating').value);
 
-        if (currentPredictionId && !isNaN(realColleen)) {
+        if (currentPredictionId && !isNaN(finalRating)) {
             try {
                 await db.collection("wine_history").doc(currentPredictionId).update({
-                    actualColleen: realColleen,
-                    actualDave: realDave,
+                    actualRating: finalRating,
                     wasOaky: wasOaky,
                     buyAgain: buyAgain
                 });
-                alert("Data saved! Your Lab is getting smarter.");
+                
+                alert("Lab History Updated! Sharing this data with the family.");
                 feedbackSection.style.display = "none";
                 wineForm.reset();
+                window.scrollTo(0, 0); // Reset view to top
             } catch (err) {
-                console.error("❌ Feedback Update Failed: ", err);
+                console.error("Update Error: ", err);
             }
         } else {
-            alert("Please enter both ratings before saving!");
+            alert("Please enter a rating from 1-10!");
         }
     });
 });
