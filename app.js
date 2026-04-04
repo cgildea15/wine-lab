@@ -1,53 +1,45 @@
-// 1. Wait for the HTML to fully load
 document.addEventListener('DOMContentLoaded', () => {
     const wineForm = document.getElementById('wine-form');
     const colleenDisplay = document.getElementById('colleen-score');
-    const boyfriendDisplay = document.getElementById('boyfriend-score');
+    const daveDisplay = document.getElementById('dave-score');
 
-    // 2. Listen for the "Predict" button click
     wineForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Stop the page from refreshing
+        e.preventDefault();
 
-        // 3. Grab the values from the inputs
-        const grape = document.getElementById('grape').value.toLowerCase();
+        // Get Input Values
+        const label = document.getElementById('labelName').value;
+        const abv = parseFloat(document.getElementById('abv').value) || 0;
+        const isOaky = document.getElementById('isOaky').checked;
         const region = document.getElementById('region').value.toLowerCase();
+        const style = document.getElementById('wineStyle').value.toLowerCase();
 
-        // 4. Set Base Scores
         let colleenScore = 7.0;
-        let boyfriendScore = 7.0;
-        let notes = "";
+        let daveScore = 7.0;
+        let notes = [];
 
-        // 5. THE LOGIC ENGINE (Based on your history)
-
-        // Rule: Smoky/Oak Check (His "Off-putting" trigger)
-        if (grape.includes('cabernet') || region.includes('medoc') || region.includes('pauillac')) {
-            boyfriendScore -= 3.0;
-            notes += "⚠️ Potential smoky/tobacco finish. ";
+        // Logic 1: The "Dave" Smoky Trigger
+        if (isOaky) {
+            daveScore -= 4.0;
+            notes.push("⚠️ High risk for Dave: Smoky/Oak finish.");
         }
 
-        // Rule: Lush Fruit Check (His "Favorite" trigger)
-        if (grape.includes('merlot') || grape.includes('montepulciano') || grape.includes('riesling')) {
-            boyfriendScore += 1.5;
-            notes += "✨ Lush, fruit-forward profile. ";
-        }
-
-        // Rule: Salinity/Mineral Check (Your "Soil Soul" trigger)
-        if (region.includes('sicily') || region.includes('marche') || grape.includes('vermentino') || grape.includes('gruner')) {
-            colleenScore += 2.0;
-            notes += "🌊 High minerality/salinity detected. ";
-        }
-
-        // Rule: Sweetness Warning (Your "Syrupy" trigger)
-        if (grape.includes('moscato') || grape.includes('gewurztraminer')) {
+        // Logic 2: The "Colleen" Burn Check
+        if (abv > 14.2) {
             colleenScore -= 2.0;
-            notes += "🍭 Higher sweetness level. ";
+            notes.push("🔥 High ABV: Possible alcoholic burn.");
+        } else if (abv > 0 && abv < 12.5) {
+            colleenScore += 1.0;
+            notes.push("🍃 Low ABV: Crisp and refreshing.");
         }
 
-        // 6. Display the results (WCAG compliant: clear text output)
-        colleenDisplay.innerHTML = `<h3>Colleen's Predicted Score: ${colleenScore.toFixed(1)}</h3>`;
-        boyfriendDisplay.innerHTML = `<h3>Boyfriend's Predicted Score: ${boyfriendScore.toFixed(1)}</h3><p>${notes}</p>`;
-        
-        // Use aria-live to announce results to screen readers
-        document.getElementById('results').setAttribute('aria-label', `Prediction results updated. Colleen: ${colleenScore}, Boyfriend: ${boyfriendScore}`);
+        // Logic 3: Soil Soul (Coastal/Volcanic)
+        if (region.includes('coast') || region.includes('sicily') || region.includes('chile')) {
+            colleenScore += 1.5;
+            notes.push("🌊 Saline/Mineral notes expected.");
+        }
+
+        // Display Results
+        colleenDisplay.innerHTML = `<h3>Colleen: ${colleenScore.toFixed(1)}</h3>`;
+        daveDisplay.innerHTML = `<h3>Dave: ${daveScore.toFixed(1)}</h3><p>${notes.join('<br>')}</p>`;
     });
 });
