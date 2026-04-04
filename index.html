@@ -5,14 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wine Lab Predictor</title>
     <link rel="stylesheet" href="style.css">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": "Wine Lab Entry",
-      "category": "Wine"
-    }
-    </script>
 </head>
 <body>
     <header>
@@ -20,11 +12,11 @@
     </header>
 
     <main>
-        <form id="wine-form" aria-labelledby="form-title">
+        <form id="wine-form">
             <h2 id="form-title">Enter Wine Details</h2>
             
             <label for="labelName">Vineyard / Label Name:</label>
-            <input type="text" id="labelName" name="labelName" placeholder="e.g. Natura" required>
+            <input type="text" id="labelName" name="labelName" placeholder="e.g. Natura or Doris Find" required>
 
             <label for="wineStyle">Wine Style / Grape Blend:</label>
             <input type="text" id="wineStyle" name="wineStyle" placeholder="e.g. Rosé or Red Blend">
@@ -36,10 +28,10 @@
             <input type="number" id="abv" name="abv" min="0" max="25" step="0.1" placeholder="e.g. 13.5">
 
             <label for="region">Region/City:</label>
-            <input type="text" id="region" name="region" placeholder="e.g. Casablanca Valley, Chile">
+            <input type="text" id="region" name="region" placeholder="e.g. Chile or Italy">
 
             <label for="price">Price ($):</label>
-            <input type="number" id="price" name="price" step="0.01" placeholder="e.g. 14.99">
+            <input type="number" id="price" name="price" step="0.01" placeholder="15.99">
 
             <button type="submit" style="margin-top:20px;">Predict Our Scores</button>
         </form>
@@ -52,7 +44,7 @@
                 <h3>Actual Tasting Results</h3>
                 
                 <fieldset style="border:none; padding:0; margin-bottom:1rem;">
-                    <legend style="font-weight:bold;">Was it Oaky/Smoky?</legend>
+                    <legend style="font-weight:bold;">Was it Oaky/Smoky? (Dave's Trigger)</legend>
                     <label class="switch">
                         <input type="checkbox" id="actualOaky">
                         <span class="slider round"></span>
@@ -67,13 +59,21 @@
                     </label>
                 </fieldset>
 
-                <label for="actual-colleen">Colleen's Actual Rating (1-10):</label>
-                <input type="number" id="actual-colleen" min="1" max="10" step="0.1" placeholder="9.0">
-                
-                <label for="actual-dave">Dave's Actual Rating (1-10):</label>
-                <input type="number" id="actual-dave" min="1" max="10" step="0.1" placeholder="8.5">
+                <label for="actual-rating">Final Lab Rating (1-10):</label>
+                <input type="number" id="actual-rating" min="1" max="10" step="0.1" placeholder="7.0">
                 
                 <button id="save-rating" style="background-color: #4a0e0e; margin-top:15px;">Confirm & Save to History</button>
+
+                <div id="scale-legend" style="margin-top:25px; font-size: 0.85rem; color: #555; background: #f9f9f9; padding: 10px; border-radius: 5px;">
+                    <p><strong>The Scale:</strong></p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>🦄 <strong>10: Unicorn</strong> - Life-changing</li>
+                        <li>💎 <strong>9: Icon</strong> - Delicious, likely expensive</li>
+                        <li>🍷 <strong>7-8: Reliable/Utility</strong> - Great value BOGOs</li>
+                        <li>🍕 <strong>5-6: Everyday</strong> - Cheap & Cheerful</li>
+                        <li>❌ <strong><5: Avoid</strong> - Not our style</li>
+                    </ul>
+                </div>
             </div>
         </section>
     </main>
