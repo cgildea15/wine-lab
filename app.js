@@ -22,26 +22,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // PHASE 1: PREDICT & INITIAL SAVE
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        // Prevent duplicate clicks
         predictBtn.disabled = true;
-        predictBtn.innerText = "Saving to Lab...";
+        predictBtn.innerText = "Analyzing Value...";
 
         const label = document.getElementById('labelName').value;
         const abv = parseFloat(document.getElementById('abv').value) || 0;
         const region = document.getElementById('region').value.toLowerCase();
         const price = parseFloat(document.getElementById('price').value) || 0;
+        const context = document.getElementById('purchaseContext').value;
 
         let colleenScore = 7.0; 
         let daveScore = 7.0;
+
+        // "Value Normalizer" Logic
+        if (context === 'restaurant' && price <= 12) {
+            colleenScore += 0.5; // Happy Hour bonus!
+        } else if (context === 'retail' && price <= 15) {
+            colleenScore += 0.5; // Store Utility bonus!
+        }
+
         if (abv > 14.2) { colleenScore -= 1.0; }
-        if (region.includes('chile') || region.includes('italy') || region.includes('verona') || region.includes('marche')) {
+        if (region.includes('chile') || region.includes('italy') || region.includes('verona')) {
             colleenScore += 1.0;
         }
 
         try {
             const docRef = await db.collection("wine_history").add({
-                label, abv, region, price,
+                label, abv, region, price, context,
                 predictedColleen: colleenScore,
                 predictedDave: daveScore,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -51,20 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('colleen-score').innerHTML = `<h3>Colleen's Prediction: ${colleenScore.toFixed(1)}</h3>`;
             document.getElementById('dave-score').innerHTML = `<h3>Dave's Prediction: ${daveScore.toFixed(1)}</h3>`;
             
-            // Pop-up Confirmation
-            alert("Entry Created! You can now enter tasting notes below.");
-            
+            alert("Lab Entry Created! Now, let's taste it.");
             feedbackSection.style.display = "block"; 
             predictBtn.innerText = "Saved ✅";
         } catch (error) { 
-            console.error("Firebase Error:", error);
-            alert("Error saving wine: " + error.message);
+            console.error(error);
             predictBtn.disabled = false;
-            predictBtn.innerText = "Predict Our Scores";
         }
     });
 
-    // PHASE 2: UPDATE WITH TASTING DATA
+    // PHASE 2: FEEDBACK & TASTING
     saveButton.addEventListener('click', async () => {
         const finalRating = parseFloat(document.getElementById('actual-rating').value);
         const notes = document.getElementById('tastingNotes').value;
@@ -73,9 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const taster = document.getElementById('user-name').value || "Colleen";
 
         if (currentPredictionId && !isNaN(finalRating)) {
-            saveButton.disabled = true;
-            saveButton.innerText = "Updating...";
-
             try {
                 await db.collection("wine_history").doc(currentPredictionId).update({
                     actualRating: finalRating,
@@ -85,23 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     taster: taster,
                     wasOaky: document.getElementById('actualOaky').checked
                 });
-                
-                alert("Lab History Updated Successfully! 🍷");
-                
+                alert("Success! Data Shared.");
                 feedbackSection.style.display = "none";
                 wineForm.reset();
                 predictBtn.disabled = false;
                 predictBtn.innerText = "Predict Our Scores";
-                saveButton.disabled = false;
-                saveButton.innerText = "Confirm & Save to History";
-            } catch (err) { 
-                console.error("Update Error:", err);
-                alert("Failed to update: " + err.message);
-                saveButton.disabled = false;
-            }
-        } else {
-            alert("Please enter a final rating (1-10) before saving!");
-        }
+            } catch (err) { console.error(err); }
+        } else { alert("Enter a rating first!"); }
     });
 
     // 3. THE LIVE CELLAR LISTENER
@@ -110,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         list.innerHTML = "";
         snapshot.forEach((doc) => {
             const w = doc.data();
+            const icon = w.context === 'restaurant' ? '🍴' : '🏪';
             const card = document.createElement('div');
             card.style = "background:white; padding:15px; border-radius:8px; border-left: 5px solid #800020; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
             card.innerHTML = `
@@ -117,8 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>${w.label}</strong>
                     <span style="color:#800020; font-weight:bold;">⭐ ${w.actualRating || 'TBD'}</span>
                 </div>
-                <div style="font-size:0.8rem; color:#666;">
-                    ${w.taster ? 'By: ' + w.taster : ''} | ${w.tastingNotes ? '<i>"' + w.tastingNotes + '"</i>' : ''}
+                <div style="font-size:0.85rem; color:#666;">
+                    ${icon} $${w.price} | By: ${w.taster || 'Unknown'}
+                </div>
+                <div style="font-size:0.8rem; color:#444; margin-top:5px; font-style:italic;">
+                    ${w.tastingNotes ? '"' + w.tastingNotes + '"' : ''}
                 </div>
             `;
             list.appendChild(card);
