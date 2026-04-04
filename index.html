@@ -9,31 +9,8 @@
     {
       "@context": "https://schema.org/",
       "@type": "Product",
-      "name": "Conte Rosso",
-      "category": "Red Wine",
-      "manufacturer": "Il Conte Villa Prandone",
-      "additionalProperty": [
-        {
-          "@type": "PropertyValue",
-          "name": "Grape",
-          "value": "Sangiovese, Montepulciano"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "Region",
-          "value": "Marche, Italy"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "Process",
-          "value": "Stainless Steel" 
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "SmokyTrigger",
-          "value": false
-        }
-      ]
+      "name": "Wine Lab Entry",
+      "category": "Wine"
     }
     </script>
 </head>
@@ -61,24 +38,48 @@
             <label for="region">Region/City:</label>
             <input type="text" id="region" name="region" placeholder="e.g. Casablanca Valley, Chile">
 
-            <fieldset style="border:none; padding:0; margin-top:1rem;">
-                <legend style="font-weight:bold; margin-bottom:5px;">Is it Oaky/Smoky?</legend>
-                <label class="switch">
-                    <input type="checkbox" id="isOaky" aria-label="Is the wine oaky or smoky?">
-                    <span class="slider round"></span>
-                </label>
-            </fieldset>
+            <label for="price">Price ($):</label>
+            <input type="number" id="price" name="price" step="0.01" placeholder="e.g. 14.99">
 
             <button type="submit" style="margin-top:20px;">Predict Our Scores</button>
         </form>
 
         <section id="results" aria-live="polite">
             <div id="colleen-score"></div>
-            <div id="dave-score"></div> </section>
+            <div id="dave-score"></div> 
+
+            <div id="feedback-section" style="display:none; margin-top:20px; border-top:2px solid #800020; padding-top:15px;">
+                <h3>Actual Tasting Results</h3>
+                
+                <fieldset style="border:none; padding:0; margin-bottom:1rem;">
+                    <legend style="font-weight:bold;">Was it Oaky/Smoky?</legend>
+                    <label class="switch">
+                        <input type="checkbox" id="actualOaky">
+                        <span class="slider round"></span>
+                    </label>
+                </fieldset>
+
+                <fieldset style="border:none; padding:0; margin-bottom:1rem;">
+                    <legend style="font-weight:bold;">Would Buy Again?</legend>
+                    <label class="switch">
+                        <input type="checkbox" id="buyAgain">
+                        <span class="slider round"></span>
+                    </label>
+                </fieldset>
+
+                <label for="actual-colleen">Colleen's Actual Rating (1-10):</label>
+                <input type="number" id="actual-colleen" min="1" max="10" step="0.1" placeholder="9.0">
+                
+                <label for="actual-dave">Dave's Actual Rating (1-10):</label>
+                <input type="number" id="actual-dave" min="1" max="10" step="0.1" placeholder="8.5">
+                
+                <button id="save-rating" style="background-color: #4a0e0e; margin-top:15px;">Confirm & Save to History</button>
+            </div>
+        </section>
     </main>
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <script src="app.js"></script>
 </body>
 </html>
