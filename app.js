@@ -1,4 +1,4 @@
-// 1. Firebase Config - Ensuring the keys are present
+// 1. Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyA2GxSOi1McA7frSXuiq66igVrAqB7kPqo",
   authDomain: "winelab-c2f76.firebaseapp.com",
@@ -21,19 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentPredictionId = null; 
 
-    // PHASE 1: THE PREDICTION
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        console.log("🚀 Prediction started...");
+        console.log("🚀 Logic Triggered");
 
-        // Get values from the form
+        // Collect inputs
         const label = document.getElementById('labelName').value;
         const abv = parseFloat(document.getElementById('abv').value) || 0;
         const region = document.getElementById('region').value.toLowerCase();
         const style = document.getElementById('wineStyle').value.toLowerCase();
         const price = parseFloat(document.getElementById('price').value) || 0;
 
-        // Logic Levers
+        // PREDICTION LOGIC
         let colleenScore = 7.5; 
         let daveScore = 7.5;
         let notes = [];
@@ -42,40 +41,35 @@ document.addEventListener('DOMContentLoaded', () => {
             colleenScore -= 1.0; 
             notes.push("🔥 High ABV: Watch for 'burn'."); 
         }
-        if (region.includes('chile') || region.includes('sicily') || region.includes('italy')) {
+        if (region.includes('chile') || region.includes('italy') || region.includes('sicily')) {
             colleenScore += 1.0;
             notes.push("🌊 Expecting mineral/saline notes.");
         }
 
-        // Try to save the prediction to Firebase
+        // 1. UPDATE SCREEN IMMEDIATELY (Don't wait for database)
+        colleenDisplay.innerHTML = `<h3>Colleen's Prediction: ${colleenScore.toFixed(1)}</h3>`;
+        daveDisplay.innerHTML = `<h3>Dave's Prediction: ${daveScore.toFixed(1)}</h3><p>${notes.join('<br>')}</p>`;
+        feedbackSection.style.display = "block"; 
+        console.log("🖥️ Display Updated");
+
+        // 2. SAVE TO DATABASE IN BACKGROUND
         try {
-            console.log("📡 Sending data to Firebase...");
             const docRef = await db.collection("wine_history").add({
                 label, abv, region, style, price,
                 predictedColleen: colleenScore,
                 predictedDave: daveScore,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
             currentPredictionId = docRef.id;
-            console.log("✅ Saved! ID: ", currentPredictionId);
-            
-            // Display results on the screen
-            colleenDisplay.innerHTML = `<h3>Colleen's Prediction: ${colleenScore.toFixed(1)}</h3>`;
-            daveDisplay.innerHTML = `<h3>Dave's Prediction: ${daveScore.toFixed(1)}</h3><p>${notes.join('<br>')}</p>`;
-            
-            // Show the hidden feedback section
-            feedbackSection.style.display = "block"; 
-            
+            console.log("✅ Firebase Sync Successful: ", currentPredictionId);
         } catch (error) {
-            console.error("❌ Firebase Error: ", error);
-            alert("Database connection failed. See console for details.");
+            console.error("❌ Firebase Sync Failed: ", error);
+            // We don't alert here so the user can still enjoy the app even if offline
         }
     });
 
-    // PHASE 2: THE FEEDBACK (LEARNING)
+    // PHASE 2: FEEDBACK (THE LEARNING LOOP)
     saveButton.addEventListener('click', async () => {
-        console.log("📝 Saving tasting feedback...");
         const wasOaky = document.getElementById('actualOaky').checked;
         const buyAgain = document.getElementById('buyAgain').checked;
         const realColleen = parseFloat(document.getElementById('actual-colleen').value);
@@ -89,15 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     wasOaky: wasOaky,
                     buyAgain: buyAgain
                 });
-                
-                alert("History updated! Database is refining.");
+                alert("Data saved! Your Lab is getting smarter.");
                 feedbackSection.style.display = "none";
                 wineForm.reset();
             } catch (err) {
-                console.error("❌ Update Error: ", err);
+                console.error("❌ Feedback Update Failed: ", err);
             }
         } else {
-            alert("Please enter ratings for both before saving!");
+            alert("Please enter both ratings before saving!");
         }
     });
 });
