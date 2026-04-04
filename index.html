@@ -1,40 +1,41 @@
 <!DOCTYPE html>
-<html lang="en"> <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wine Lab Predictor</title>
     <link rel="stylesheet" href="style.css">
     <script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "Conte Rosso",
-  "category": "Red Wine",
-  "manufacturer": "Il Conte Villa Prandone",
-  "additionalProperty": [
     {
-      "@type": "PropertyValue",
-      "name": "Grape",
-      "value": "Sangiovese, Montepulciano"
-    },
-    {
-      "@type": "PropertyValue",
-      "name": "Region",
-      "value": "Marche, Italy"
-    },
-    {
-      "@type": "PropertyValue",
-      "name": "Process",
-      "value": "Stainless Steel" 
-    },
-    {
-      "@type": "PropertyValue",
-      "name": "SmokyTrigger",
-      "value": false
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "Conte Rosso",
+      "category": "Red Wine",
+      "manufacturer": "Il Conte Villa Prandone",
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "Grape",
+          "value": "Sangiovese, Montepulciano"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Region",
+          "value": "Marche, Italy"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Process",
+          "value": "Stainless Steel" 
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "SmokyTrigger",
+          "value": false
+        }
+      ]
     }
-  ]
-}
-</script>
+    </script>
 </head>
 <body>
     <header>
@@ -45,19 +46,35 @@
         <form id="wine-form" aria-labelledby="form-title">
             <h2 id="form-title">Enter Wine Details</h2>
             
-            <label for="grape">Grape Variety:</label>
-            <input type="text" id="grape" name="grape" placeholder="e.g. Aglianico" required>
+            <label for="labelName">Vineyard / Label Name:</label>
+            <input type="text" id="labelName" name="labelName" placeholder="e.g. Natura" required>
+
+            <label for="wineStyle">Wine Style / Grape Blend:</label>
+            <input type="text" id="wineStyle" name="wineStyle" placeholder="e.g. Rosé or Red Blend">
+
+            <label for="vintage">Vintage (Year):</label>
+            <input type="number" id="vintage" name="vintage" min="1900" max="2099" placeholder="2024">
+
+            <label for="abv">ABV % (Alcohol):</label>
+            <input type="number" id="abv" name="abv" min="0" max="25" step="0.1" placeholder="e.g. 13.5">
 
             <label for="region">Region/City:</label>
-            <input type="text" id="region" name="region" placeholder="e.g. Campania, Irpinia">
+            <input type="text" id="region" name="region" placeholder="e.g. Casablanca Valley, Chile">
 
-            <button type="submit">Predict Our Scores</button>
+            <fieldset style="border:none; padding:0; margin-top:1rem;">
+                <legend style="font-weight:bold; margin-bottom:5px;">Is it Oaky/Smoky?</legend>
+                <label class="switch">
+                    <input type="checkbox" id="isOaky" aria-label="Is the wine oaky or smoky?">
+                    <span class="slider round"></span>
+                </label>
+            </fieldset>
+
+            <button type="submit" style="margin-top:20px;">Predict Our Scores</button>
         </form>
 
         <section id="results" aria-live="polite">
             <div id="colleen-score"></div>
-            <div id="boyfriend-score"></div>
-        </section>
+            <div id="dave-score"></div> </section>
     </main>
 
     <script src="app.js"></script>
