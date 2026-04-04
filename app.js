@@ -1,44 +1,60 @@
+// REPLACE THIS with your actual config from Firebase Console
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef123"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 document.addEventListener('DOMContentLoaded', () => {
     const wineForm = document.getElementById('wine-form');
     const colleenDisplay = document.getElementById('colleen-score');
     const daveDisplay = document.getElementById('dave-score');
 
-    wineForm.addEventListener('submit', (e) => {
+    wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Get Input Values
-        const label = document.getElementById('labelName').value;
-        const abv = parseFloat(document.getElementById('abv').value) || 0;
-        const isOaky = document.getElementById('isOaky').checked;
-        const region = document.getElementById('region').value.toLowerCase();
-        const style = document.getElementById('wineStyle').value.toLowerCase();
+        // 1. Collect Data
+        const wineData = {
+            label: document.getElementById('labelName').value,
+            style: document.getElementById('wineStyle').value,
+            vintage: document.getElementById('vintage').value,
+            abv: parseFloat(document.getElementById('abv').value) || 0,
+            region: document.getElementById('region').value.toLowerCase(),
+            isOaky: document.getElementById('isOaky').checked,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
 
+        // 2. Initial Prediction Logic (The "Starting Point")
         let colleenScore = 7.0;
         let daveScore = 7.0;
         let notes = [];
 
-        // Logic 1: The "Dave" Smoky Trigger
-        if (isOaky) {
-            daveScore -= 4.0;
-            notes.push("⚠️ High risk for Dave: Smoky/Oak finish.");
+        if (wineData.isOaky) { daveScore -= 4.0; notes.push("⚠️ Smoky risk for Dave."); }
+        if (wineData.abv > 14.2) { colleenScore -= 2.0; notes.push("🔥 High ABV burn risk."); }
+        if (wineData.region.includes('sicily') || wineData.region.includes('coast')) { colleenScore += 1.5; }
+
+        // 3. THE ADVANCED PART: "Refining Predictions"
+        // Here, we save the prediction. Later, we'll add a 'Actual Rating' button
+        // that updates this entry, allowing the app to learn your patterns.
+        try {
+            await db.collection("wine_history").add({
+                ...wineData,
+                predictedColleen: colleenScore,
+                predictedDave: daveScore
+            });
+            console.log("Wine saved to history!");
+        } catch (error) {
+            console.error("Error saving to Firebase: ", error);
         }
 
-        // Logic 2: The "Colleen" Burn Check
-        if (abv > 14.2) {
-            colleenScore -= 2.0;
-            notes.push("🔥 High ABV: Possible alcoholic burn.");
-        } else if (abv > 0 && abv < 12.5) {
-            colleenScore += 1.0;
-            notes.push("🍃 Low ABV: Crisp and refreshing.");
-        }
-
-        // Logic 3: Soil Soul (Coastal/Volcanic)
-        if (region.includes('coast') || region.includes('sicily') || region.includes('chile')) {
-            colleenScore += 1.5;
-            notes.push("🌊 Saline/Mineral notes expected.");
-        }
-
-        // Display Results
+        // 4. Display
         colleenDisplay.innerHTML = `<h3>Colleen: ${colleenScore.toFixed(1)}</h3>`;
         daveDisplay.innerHTML = `<h3>Dave: ${daveScore.toFixed(1)}</h3><p>${notes.join('<br>')}</p>`;
     });
