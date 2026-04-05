@@ -12,108 +12,120 @@
         <form id="wine-form">
             <h2 id="form-title">Enter Wine Details</h2>
             
-            <label for="labelName">Vineyard / Label Name:</label>
-            <input type="text" id="labelName" required placeholder="e.g. Dr. Loosen or Amarone">
+            <div class="input-group">
+                <label for="labelName">Vineyard / Label Name</label>
+                <input type="text" id="labelName" required placeholder="e.g. Dr. Loosen">
+            </div>
 
-            <label for="wineStyle">Style / Blend:</label>
-            <input type="text" id="wineStyle" placeholder="e.g. Riesling, Orange, or Valpolicella">
+            <div class="input-group">
+                <label for="wineStyle">Style / Blend</label>
+                <input type="text" id="wineStyle" placeholder="e.g. Riesling or Orange">
+            </div>
 
-            <div style="display: flex; gap: 10px;">
-                <div style="flex: 1;">
-                    <label for="purchaseContext">Context:</label>
-                    <select id="purchaseContext" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px;">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="purchaseContext">Context</label>
+                    <select id="purchaseContext">
                         <option value="retail">🏪 Store</option>
                         <option value="restaurant">🍴 Restaurant</option>
                     </select>
                 </div>
-                <div style="flex: 1;">
-                    <label for="temp">Serving Temp:</label>
-                    <select id="temp" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px;">
+                <div class="input-group">
+                    <label for="temp">Serving Temp</label>
+                    <select id="temp">
                         <option value="chilled">❄️ Chilled</option>
                         <option value="room">🌡️ Room Temp</option>
                     </select>
                 </div>
             </div>
 
-            <label for="setting">Current Vibe:</label>
-            <select id="setting" style="width:100%; padding:10px; margin-bottom:15px; border-radius:5px;">
-                <option value="home">🏠 Home / Night</option>
-                <option value="water">🌊 By the Water / Afternoon</option>
-                <option value="social">🎉 Social / Event</option>
-            </select>
+            <div class="input-group">
+                <label for="setting">Current Vibe</label>
+                <select id="setting">
+                    <option value="home">🏠 Home / Night</option>
+                    <option value="water">🌊 By the Water</option>
+                    <option value="social">🎉 Social / Event</option>
+                </select>
+            </div>
 
-            <label for="pairing">What are we eating?</label>
-            <input type="text" id="pairing" placeholder="e.g. Heavy Pasta, Spicy, or No Food">
+            <div class="input-group">
+                <label for="pairing">What are we eating?</label>
+                <input type="text" id="pairing" placeholder="e.g. Heavy Pasta">
+            </div>
 
-            <div style="display: flex; gap: 10px;">
-                <div style="flex: 1;">
-                    <label for="price">Price ($):</label>
-                    <input type="number" id="price" step="0.01" placeholder="12.00">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="vintage">Year</label>
+                    <input type="number" id="vintage" placeholder="2022">
                 </div>
-                <div style="flex: 1;">
-                    <label for="abv">ABV %:</label>
+                <div class="input-group">
+                    <label for="abv">ABV %</label>
                     <input type="number" id="abv" step="0.1" placeholder="13.5">
                 </div>
             </div>
 
-            <label for="region">Region/City:</label>
-            <input type="text" id="region" placeholder="e.g. Germany or Italy">
+            <div class="input-group">
+                <label for="price">Price ($)</label>
+                <input type="number" id="price" step="0.01" placeholder="12.00">
+            </div>
 
-            <button type="submit" id="predict-btn" style="margin-top:20px;">Predict Our Scores</button>
+            <div class="input-group">
+                <label for="region">Region(s)</label>
+                <input type="text" id="region" placeholder="e.g. Spain, Navarra">
+            </div>
+
+            <button type="submit" id="predict-btn">Predict Our Scores</button>
         </form>
 
         <section id="results">
-            <div style="display: flex; justify-content: space-around; margin-bottom: 20px; gap: 10px;">
-                <div style="text-align: center; background: #fff5f5; padding: 15px; border-radius: 8px; border: 1px solid #800020; flex: 1;">
-                    <span style="font-size: 0.8rem; color: #800020; font-weight: bold;">COLLEEN</span>
-                    <div id="c-score-val" style="font-size: 2rem; font-weight: bold;">--</div>
+            <div class="score-container">
+                <div class="score-card colleen-card">
+                    <span class="score-label">COLLEEN</span>
+                    <div id="c-score-val">--</div>
                 </div>
-                <div style="text-align: center; background: #f0f7ff; padding: 15px; border-radius: 8px; border: 1px solid #004080; flex: 1;">
-                    <span style="font-size: 0.8rem; color: #004080; font-weight: bold;">DAVE</span>
-                    <div id="d-score-val" style="font-size: 2rem; font-weight: bold;">--</div>
+                <div class="score-card dave-card">
+                    <span class="score-label">DAVE</span>
+                    <div id="d-score-val">--</div>
                 </div>
             </div>
 
-            <div id="feedback-section" style="display:none; margin-top:20px; border-top:2px solid #800020; padding-top:15px;">
+            <div id="feedback-section" style="display:none;">
                 <h3>Actual Tasting Results</h3>
-                <label for="user-name">Who is tasting?</label>
-                <input type="text" id="user-name" placeholder="Colleen, Dave, or Brother?">
+                <div class="input-group">
+                    <label for="user-name">Who is tasting?</label>
+                    <input type="text" id="user-name" placeholder="Colleen, Dave, or Brother?">
+                </div>
                 
-                <div style="display: flex; gap: 20px; margin: 15px 0;">
+                <div class="checkbox-row">
                     <label><input type="checkbox" id="actualOaky"> Oaky/Smoky?</label>
                     <label><input type="checkbox" id="buyAgain"> Buy Again?</label>
                 </div>
 
-                <label for="tastingNotes">Notes (Strawberry, Saline, etc):</label>
-                <input type="text" id="tastingNotes" placeholder="What do you taste?">
-                
-                <label for="flavorVibe">Overall Vibe:</label>
-                <select id="flavorVibe" style="width:100%; padding:10px; margin-bottom:15px;">
-                    <option value="balanced">Balanced</option>
-                    <option value="loved">Loved it!</option>
-                    <option value="disliked">Not for me</option>
-                </select>
-
-                <label for="actual-rating">Final Lab Rating (1-10):</label>
-                <input type="number" id="actual-rating" min="1" max="10" step="0.1">
-                
-                <button id="save-rating" style="background-color: #4a0e0e; color:white; width:100%; padding:12px; margin-top:10px; border:none; border-radius:5px;">Confirm & Save</button>
-
-                <div id="scale-legend" style="margin-top:25px; font-size: 0.85rem; background: #fff5f5; padding: 15px; border-radius: 8px; border: 1px solid #800020;">
-                    <p><strong>🧪 The Lab Rating Guide:</strong></p>
-                    <ul style="list-style: none; padding: 0;">
-                        <li>🦄 <strong>10: Unicorn</strong> - Life-changing</li>
-                        <li>💎 <strong>9: Icon</strong> - Delicious/Expensive</li>
-                        <li>🍷 <strong>7-8: Reliable</strong> - Great value BOGO</li>
-                        <li>🍕 <strong>5-6: Everyday</strong> - Cheap & Cheerful</li>
-                        <li>❌ <strong>&lt;5: Avoid</strong> - Slap that Franzia bag!</li>
-                    </ul>
+                <div class="input-group">
+                    <label for="tastingNotes">Notes (Strawberry, Saline, etc)</label>
+                    <input type="text" id="tastingNotes" placeholder="Notes">
                 </div>
+                
+                <div class="input-group">
+                    <label for="flavorVibe">Overall Vibe</label>
+                    <select id="flavorVibe">
+                        <option value="balanced">Balanced</option>
+                        <option value="loved">Loved it!</option>
+                        <option value="disliked">Not for me</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="actual-rating">Final Lab Rating (1-10)</label>
+                    <input type="number" id="actual-rating" min="1" max="10" step="0.1">
+                </div>
+                
+                <button id="save-rating">Confirm & Save</button>
             </div>
         </section>
 
-        <section id="cellar-history" style="margin-top:40px; border-top: 3px double #800020; padding-top:20px;">
-            <h2 style="text-align:center;">📜 Recent Discoveries</h2>
+        <section id="cellar-history">
+            <h2>📜 Recent Discoveries</h2>
             <div id="history-list"></div>
         </section>
     </main>
