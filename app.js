@@ -20,30 +20,33 @@ document.addEventListener('DOMContentLoaded', () => {
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         predictBtn.disabled = true;
-        predictBtn.innerText = "Analyzing...";
+        predictBtn.innerText = "Analyzing Context...";
 
         const label = document.getElementById('labelName').value;
+        const purchaseLocation = document.getElementById('purchaseLocation').value;
         const style = document.getElementById('wineStyle').value.toLowerCase();
         const vintage = parseInt(document.getElementById('vintage').value) || 0;
         const abv = parseFloat(document.getElementById('abv').value) || 0;
         const temp = document.getElementById('temp').value;
         const setting = document.getElementById('setting').value;
 
-        // Smart Splitters
         const regionRaw = document.getElementById('region').value;
         const regionList = regionRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
         const notesRaw = document.getElementById('predictNotes').value;
         const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
-        // Prediction Logic
+        // PREDICTION LOGIC
         let cScore = 7.0; let dScore = 7.0;
+
+        if (purchaseLocation === 'vineyard') cScore += 0.5;
+        if (purchaseLocation === 'restaurant') cScore += 0.2;
         if (notesList.includes('minerals') || notesList.includes('saline')) cScore += 1.5;
         if (style.includes('orange')) cScore += 1.0;
         if (notesList.includes('oak') || notesList.includes('smoke')) dScore -= 1.5;
 
         try {
             const docRef = await db.collection("wine_history").add({
-                label, style, vintage, abv, temp, setting,
+                label, purchaseLocation, style, vintage, abv, temp, setting,
                 region: regionList, tastingNotes: notesList,
                 predictedColleen: cScore, predictedDave: dScore,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -77,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 predictBtn.innerText = "Predict Our Scores";
                 document.getElementById('c-score-val').innerText = "--";
                 document.getElementById('d-score-val').innerText = "--";
-                document.getElementById('buyAgain').checked = false; // Reset toggle
+                document.getElementById('buyAgain').checked = false;
             } catch (err) { alert(err.message); }
         }
     });
