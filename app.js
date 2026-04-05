@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const label = document.getElementById('labelName').value;
             const purchaseLocation = document.getElementById('purchaseLocation').value;
             const style = document.getElementById('wineStyle').value.toLowerCase();
-            const vintage = parseInt(document.getElementById('vintage').value) || 0; // RE-ADDED
+            const vintage = parseInt(document.getElementById('vintage').value) || 0;
             const abv = parseFloat(document.getElementById('abv').value) || 0;
             const price = parseFloat(document.getElementById('price').value) || 0;
             const temp = document.getElementById('temp').value;
@@ -30,21 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const regionList = regionRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
             const notesRaw = document.getElementById('predictNotes').value;
             const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
+            
+            // NEW: Capture Food Pairing
+            const foodRaw = document.getElementById('foodPairing').value;
+            const foodList = foodRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
             // Prediction Logic
             let cScore = 7.0; let dScore = 7.0;
-
-            // Age Logic: Older whites/oranges get a "complexity bonus" for Colleen
-            const currentYear = new Date().getFullYear();
-            if (vintage > 0 && (currentYear - vintage) > 3) cScore += 0.5;
-
             if (notesList.includes('minerals') || notesList.includes('saline')) cScore += 1.5;
             if (style.includes('orange')) cScore += 1.0;
             if (notesList.includes('oak') || notesList.includes('smoke')) dScore -= 1.5;
 
             const docRef = await db.collection("wine_history").add({
                 label, purchaseLocation, style, vintage, abv, price, temp, setting,
-                region: regionList, tastingNotes: notesList,
+                region: regionList, tastingNotes: notesList, foodPairing: foodList,
                 predictedColleen: cScore, predictedDave: dScore,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
