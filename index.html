@@ -79,20 +79,22 @@
 
             <div id="feedback-section" style="display:none;">
                 <h3>Actual Tasting Results</h3>
+                
                 <div class="input-group">
                     <label for="actual-rating">Final Lab Rating (1-10)</label>
                     <input type="number" id="actual-rating" min="1" max="10" step="0.1">
                 </div>
-                
-                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="buyAgain" style="width: 20px; height: 20px;">
-                    <label for="buyAgain" style="margin-bottom: 0;">Would Buy Again?</label>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="buyAgain">
+                    <label for="buyAgain">WOULD BUY AGAIN?</label>
                 </div>
 
                 <div class="input-group">
                     <label for="user-name">Who is tasting?</label>
                     <input type="text" id="user-name" placeholder="Colleen, Dave">
                 </div>
+
                 <button id="save-rating">Confirm & Save to Lab</button>
             </div>
         </section>
