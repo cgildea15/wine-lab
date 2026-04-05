@@ -3,7 +3,7 @@
 :root {
     --burgundy: #800020;
     --navy: #1a3a5f;
-    --calm-bg: #f2f4f0; /* Soft Sage/Cream */
+    --calm-bg: #f2f4f0;
     --card-bg: #ffffff;
     --text-main: #2d3436;
 }
@@ -46,15 +46,15 @@ input, select {
     box-sizing: border-box;
 }
 
-/* Fix for the Toggle */
 .checkbox-group {
     display: flex;
     align-items: center;
     gap: 12px;
     margin: 20px 0;
-    padding: 10px;
+    padding: 12px;
     background: #f9f9f9;
-    border-radius: 8px;
+    border-radius: 10px;
+    border: 1px solid #eee;
 }
 
 .checkbox-group input[type="checkbox"] {
@@ -73,14 +73,15 @@ button {
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
+    transition: opacity 0.2s;
 }
 
-.score-container { display: flex; gap: 12px; }
-.score-card { flex: 1; text-align: center; padding: 18px; border-radius: 14px; border: 1px solid transparent; }
-.colleen-card { background: #fff5f6; border-color: #fce4e4; color: var(--burgundy); }
-.dave-card { background: #f0f7ff; border-color: #e1efff; color: var(--navy); }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.score-container { display: flex; gap: 12px; margin-bottom: 20px; }
+.score-card { flex: 1; text-align: center; padding: 18px; border-radius: 14px; }
+.colleen-card { background: #fff5f6; color: var(--burgundy); }
+.dave-card { background: #f0f7ff; color: var(--navy); }
 #c-score-val, #d-score-val { font-size: 2.4rem; font-weight: 700; }
 
 .history-card { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-
-@media (max-width: 420px) { .input-row { flex-direction: column; } }
