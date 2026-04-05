@@ -52,23 +52,27 @@
 
             <div class="input-row">
                 <div class="input-group">
+                    <label for="vintage">Year</label>
+                    <input type="number" id="vintage" placeholder="2023">
+                </div>
+                <div class="input-group">
                     <label for="abv">ABV %</label>
                     <input type="number" id="abv" step="0.1" placeholder="12.5">
                 </div>
                 <div class="input-group">
                     <label for="price">Price ($)</label>
-                    <input type="number" id="price" step="0.01" placeholder="25.00">
+                    <input type="number" id="price" step="0.01" placeholder="15.98">
                 </div>
             </div>
 
             <div class="input-group">
                 <label for="region">Region(s) (comma separated)</label>
-                <input type="text" id="region" placeholder="Hungary, Etyek">
+                <input type="text" id="region" placeholder="France, Limoux">
             </div>
 
             <div class="input-group">
                 <label for="predictNotes">Known Notes (comma separated)</label>
-                <input type="text" id="predictNotes" placeholder="Minerals, Oak, Skin Contact">
+                <input type="text" id="predictNotes" placeholder="Minerals, Saline, Citrus">
             </div>
 
             <button type="submit" id="predict-btn">Predict Our Scores</button>
