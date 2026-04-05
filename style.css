@@ -57,13 +57,6 @@ input, select {
     border: 1px solid #eee;
 }
 
-.checkbox-group input[type="checkbox"] {
-    width: 24px;
-    height: 24px;
-    accent-color: var(--burgundy);
-    cursor: pointer;
-}
-
 button {
     width: 100%;
     padding: 16px;
@@ -75,12 +68,20 @@ button {
     cursor: pointer;
 }
 
-button:disabled { opacity: 0.6; cursor: not-allowed; }
-
 .score-container { display: flex; gap: 12px; margin-bottom: 20px; }
 .score-card { flex: 1; text-align: center; padding: 18px; border-radius: 14px; }
 .colleen-card { background: #fff5f6; color: var(--burgundy); }
 .dave-card { background: #f0f7ff; color: var(--navy); }
 #c-score-val, #d-score-val { font-size: 2.4rem; font-weight: 700; }
+
+/* LEGEND STYLING */
+.score-legend { margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ccc; }
+.score-legend h4 { font-size: 0.9rem; color: #888; margin-bottom: 10px; text-align: center; }
+.score-legend ul { list-style: none; padding: 0; margin: 0; }
+.score-legend li { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.85rem; color: #444; border-bottom: 1px solid #f9f9f9; }
+.score-legend span { font-weight: 700; min-width: 75px; padding: 2px 6px; border-radius: 4px; }
+
+.unicorn-tier span { background: #fff8e1; color: #b8860b; border: 1px solid #ffe082; }
+.failure-tier span { background: #fdf2f2; color: #c53030; }
 
 .history-card { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
