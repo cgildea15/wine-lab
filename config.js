@@ -1,6 +1,5 @@
-// This file holds secret lab keys
 const firebaseConfig = {
-    apiKey: "YOUR_NEW_API_KEY_HERE",
+    apiKey: "AIzaSyA2GxSOi1McA7frSXuiq66igVrAqB7kPqo",
     authDomain: "winelab-c2f76.firebaseapp.com",
     projectId: "winelab-c2f76",
     storageBucket: "winelab-c2f76.firebasestorage.app",
