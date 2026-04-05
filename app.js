@@ -25,11 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const label = document.getElementById('labelName').value;
         const purchaseLocation = document.getElementById('purchaseLocation').value;
         const style = document.getElementById('wineStyle').value.toLowerCase();
-        const vintage = parseInt(document.getElementById('vintage').value) || 0;
         const abv = parseFloat(document.getElementById('abv').value) || 0;
+        const price = parseFloat(document.getElementById('price').value) || 0;
         const temp = document.getElementById('temp').value;
         const setting = document.getElementById('setting').value;
 
+        // Smart List Splitters
         const regionRaw = document.getElementById('region').value;
         const regionList = regionRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
         const notesRaw = document.getElementById('predictNotes').value;
@@ -38,15 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // PREDICTION LOGIC
         let cScore = 7.0; let dScore = 7.0;
 
+        // Value & Context Modifiers
+        if (price > 0 && price < 22) cScore += 0.5; // Value win
+        if (price > 65) cScore -= 0.5; // Luxury barrier
         if (purchaseLocation === 'vineyard') cScore += 0.5;
-        if (purchaseLocation === 'restaurant') cScore += 0.2;
+        
+        // Sensory Logic
         if (notesList.includes('minerals') || notesList.includes('saline')) cScore += 1.5;
         if (style.includes('orange')) cScore += 1.0;
         if (notesList.includes('oak') || notesList.includes('smoke')) dScore -= 1.5;
 
         try {
             const docRef = await db.collection("wine_history").add({
-                label, purchaseLocation, style, vintage, abv, temp, setting,
+                label, purchaseLocation, style, abv, price, temp, setting,
                 region: regionList, tastingNotes: notesList,
                 predictedColleen: cScore, predictedDave: dScore,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
