@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header><h1>🍷 AI Wine Predictor</h1></header>
+    <header><h1>🍷 AI Wine Predictor Model</h1></header>
     <main>
         <form id="wine-form">
             <h2 id="form-title">Enter Wine Details</h2>
@@ -88,22 +88,18 @@
 
             <div id="feedback-section" style="display:none;">
                 <h3>Actual Tasting Results</h3>
-                
                 <div class="input-group">
                     <label for="actual-rating">Final Lab Rating (1-10)</label>
                     <input type="number" id="actual-rating" min="1" max="10" step="0.1">
                 </div>
-
                 <div class="checkbox-group">
                     <input type="checkbox" id="buyAgain">
                     <label for="buyAgain">WOULD BUY AGAIN?</label>
                 </div>
-
                 <div class="input-group">
                     <label for="user-name">Who is tasting?</label>
                     <input type="text" id="user-name" placeholder="Colleen, Dave">
                 </div>
-
                 <button id="save-rating">Confirm & Save to Lab</button>
             </div>
         </section>
