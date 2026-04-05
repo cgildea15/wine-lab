@@ -28,7 +28,7 @@
 
             <div class="input-group">
                 <label for="wineStyle">Style / Blend</label>
-                <input type="text" id="wineStyle" placeholder="e.g. Orange, Pinot Gris">
+                <input type="text" id="wineStyle" placeholder="e.g. Orange, Vinhão">
             </div>
 
             <div class="input-row">
@@ -71,8 +71,13 @@
             </div>
 
             <div class="input-group">
-                <label for="predictNotes">Known Notes (comma separated)</label>
+                <label for="predictNotes">Tasting Notes (comma separated)</label>
                 <input type="text" id="predictNotes" placeholder="Minerals, Saline, Citrus">
+            </div>
+
+            <div class="input-group">
+                <label for="foodPairing">Food Pairing (comma separated)</label>
+                <input type="text" id="foodPairing" placeholder="e.g. Double Crème Brie, Mango Butter, Seafood">
             </div>
 
             <button type="submit" id="predict-btn">Predict Our Scores</button>
@@ -115,10 +120,8 @@
     </main>
 
     <script src="config.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
     <script src="app.js"></script>
 </body>
 </html>
