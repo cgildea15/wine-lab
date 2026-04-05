@@ -17,40 +17,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.getElementById('save-rating');
     const predictBtn = document.getElementById('predict-btn');
 
+    // PHASE 1: PREDICTION & LOGGING
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         predictBtn.disabled = true;
-        predictBtn.innerText = "Analyzing...";
+        predictBtn.innerText = "Analyzing Lab Data...";
 
         const label = document.getElementById('labelName').value;
         const style = document.getElementById('wineStyle').value.toLowerCase();
-        
-        // Smart Splitters
+        const vintage = parseInt(document.getElementById('vintage').value) || 0;
+        const abv = parseFloat(document.getElementById('abv').value) || 0;
+        const temp = document.getElementById('temp').value;
+        const setting = document.getElementById('setting').value;
+
+        // AUTOMATION: Smart List Splitters
         const regionRaw = document.getElementById('region').value;
         const regionList = regionRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
         
         const notesRaw = document.getElementById('predictNotes').value;
         const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
-        // Prediction Logic
-        let cScore = 7.0; 
-        let dScore = 7.0;
+        // PREDICTION LOGIC
+        let cScore = 7.0; let dScore = 7.0;
 
-        // Colleen's AI Logic
+        // Colleen's Sensory Logic
         if (notesList.includes('minerals') || notesList.includes('saline')) cScore += 1.5;
-        if (notesList.includes('spice')) cScore += 0.5;
-        if (regionList.includes('italy') || regionList.includes('france')) cScore += 1.0;
+        if (notesList.includes('skin contact') || style.includes('orange')) cScore += 1.0;
+        if (setting.includes('outdoors') && temp === 'chilled') cScore += 0.5;
 
-        // Dave's AI Logic
+        // Dave's Logic
         if (notesList.includes('oak') || notesList.includes('smoke')) dScore -= 1.5;
-        if (style.includes('riesling')) dScore += 1.5;
+        if (style.includes('riesling') || (style.includes('white') && temp === 'chilled')) dScore += 1.5;
+        if (style.includes('amarone')) dScore += 2.0;
 
         try {
             const docRef = await db.collection("wine_history").add({
-                label, style, region: regionList, tastingNotes: notesList,
-                predictedColleen: cScore, predictedDave: dScore,
+                label, style, vintage, abv,
+                region: regionList,
+                tastingNotes: notesList,
+                temp, setting,
+                predictedColleen: cScore,
+                predictedDave: dScore,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
+            
             currentPredictionId = docRef.id;
             document.getElementById('c-score-val').innerText = cScore.toFixed(1);
             document.getElementById('d-score-val').innerText = dScore.toFixed(1);
@@ -59,26 +69,33 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) { alert(err.message); predictBtn.disabled = false; }
     });
 
+    // PHASE 2: TASTING FEEDBACK
     saveButton.addEventListener('click', async () => {
         const rating = parseFloat(document.getElementById('actual-rating').value);
+        const buyAgain = document.getElementById('buyAgain').checked; // BOOLEAN
+        
         if (currentPredictionId && !isNaN(rating)) {
             const tasterRaw = document.getElementById('user-name').value || "Colleen";
-            const tasterList = tasterRaw.split(',').map(i => i.trim());
+            const tasterList = tasterRaw.split(',').map(i => i.trim()).filter(i => i !== "");
 
             try {
                 await db.collection("wine_history").doc(currentPredictionId).update({
                     actualRating: rating,
+                    buyAgain: buyAgain,
                     taster: tasterList
                 });
-                alert("History Updated!");
+                alert("Lab History Updated!");
                 wineForm.reset();
                 feedbackSection.style.display = "none";
                 predictBtn.disabled = false;
                 predictBtn.innerText = "Predict Our Scores";
+                document.getElementById('c-score-val').innerText = "--";
+                document.getElementById('d-score-val').innerText = "--";
             } catch (err) { alert(err.message); }
         }
     });
 
+    // PHASE 3: LIVE RECENT LOGS
     db.collection("wine_history").orderBy("timestamp", "desc").limit(5).onSnapshot(snap => {
         const list = document.getElementById('history-list');
         list.innerHTML = "";
