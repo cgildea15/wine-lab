@@ -14,22 +14,15 @@
             
             <div class="input-group">
                 <label for="labelName">Vineyard / Label Name</label>
-                <input type="text" id="labelName" required placeholder="e.g. Famille Perrin">
+                <input type="text" id="labelName" required placeholder="e.g. Nádas Wine Workshop">
             </div>
 
             <div class="input-group">
                 <label for="wineStyle">Style / Blend</label>
-                <input type="text" id="wineStyle" placeholder="e.g. Rhone Blanc or Orange">
+                <input type="text" id="wineStyle" placeholder="e.g. Orange, Pinot Gris">
             </div>
 
             <div class="input-row">
-                <div class="input-group">
-                    <label for="purchaseContext">Context</label>
-                    <select id="purchaseContext">
-                        <option value="retail">🏪 Store</option>
-                        <option value="restaurant">🍴 Restaurant</option>
-                    </select>
-                </div>
                 <div class="input-group">
                     <label for="temp">Serving Temp</label>
                     <select id="temp">
@@ -37,36 +30,36 @@
                         <option value="room">🌡️ Room Temp</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="input-group">
-                <label for="setting">Current Vibe</label>
-                <select id="setting">
-                    <option value="home">🏠 Home / Night</option>
-                    <option value="water">🌊 By the Water</option>
-                    <option value="social">🎉 Social / Event</option>
-                </select>
+                <div class="input-group">
+                    <label for="setting">Environment & Timing</label>
+                    <select id="setting">
+                        <option value="afternoon_outdoors">☀️ Afternoon / Outdoors</option>
+                        <option value="evening_outdoors">🌙 Evening / Outdoors</option>
+                        <option value="afternoon_indoors">🏠 Afternoon / Indoors</option>
+                        <option value="evening_indoors">🍷 Evening / Indoors</option>
+                    </select>
+                </div>
             </div>
 
             <div class="input-row">
                 <div class="input-group">
                     <label for="vintage">Year</label>
-                    <input type="number" id="vintage" placeholder="2022">
+                    <input type="number" id="vintage" placeholder="2018">
                 </div>
                 <div class="input-group">
                     <label for="abv">ABV %</label>
-                    <input type="number" id="abv" step="0.1" placeholder="13.5">
+                    <input type="number" id="abv" step="0.1" placeholder="12.5">
                 </div>
             </div>
 
             <div class="input-group">
-                <label for="region">Region(s) (e.g. France, Rhone)</label>
-                <input type="text" id="region" placeholder="Spain, Navarra">
+                <label for="region">Region(s) (comma separated)</label>
+                <input type="text" id="region" placeholder="Hungary, Etyek">
             </div>
 
             <div class="input-group">
-                <label for="predictNotes">Known Notes (e.g. Minerals, Oak, Spice)</label>
-                <input type="text" id="predictNotes" placeholder="Minerals, Saline, Stone Fruit">
+                <label for="predictNotes">Known Notes (comma separated)</label>
+                <input type="text" id="predictNotes" placeholder="Minerals, Oak, Skin Contact">
             </div>
 
             <button type="submit" id="predict-btn">Predict Our Scores</button>
@@ -90,11 +83,17 @@
                     <label for="actual-rating">Final Lab Rating (1-10)</label>
                     <input type="number" id="actual-rating" min="1" max="10" step="0.1">
                 </div>
-                <div class="input-group">
-                    <label for="user-name">Who is tasting? (e.g. Colleen, Dave)</label>
-                    <input type="text" id="user-name" placeholder="Colleen">
+                
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="buyAgain" style="width: 20px; height: 20px;">
+                    <label for="buyAgain" style="margin-bottom: 0;">Would Buy Again?</label>
                 </div>
-                <button id="save-rating">Confirm & Save</button>
+
+                <div class="input-group">
+                    <label for="user-name">Who is tasting?</label>
+                    <input type="text" id="user-name" placeholder="Colleen, Dave">
+                </div>
+                <button id="save-rating">Confirm & Save to Lab</button>
             </div>
         </section>
 
