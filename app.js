@@ -34,13 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const setting = document.getElementById('setting').value;
         const pairing = document.getElementById('pairing').value.toLowerCase();
 
-        // Smart Region Splitter (Spain, Navarra -> ["spain", "navarra"])
+        // AUTOMATION: Smart Region Splitter (Spain, Navarra -> ["spain", "navarra"])
         const regionRaw = document.getElementById('region').value;
-        const regionList = regionRaw.split(',').map(item => item.trim().toLowerCase());
+        const regionList = regionRaw.split(',').map(item => item.trim().toLowerCase()).filter(item => item !== "");
 
         // Prediction Logic
-        let cScore = 7.0; // Colleen's Base
-        let dScore = 7.0; // Dave's Base
+        let cScore = 7.0; 
+        let dScore = 7.0;
 
         // Colleen's Rules
         if (regionList.includes('italy') || regionList.includes('spain')) cScore += 1.0;
@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const docRef = await db.collection("wine_history").add({
-                label, style, vintage, abv, price, region: regionList,
+                label, style, vintage, abv, price, 
+                region: regionList, // Saved as List
                 temp, setting, pairing,
                 predictedColleen: cScore,
                 predictedDave: dScore,
@@ -82,38 +83,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // PHASE 2: TASTING UPDATES
+    // PHASE 2: TASTING UPDATES (WITH AUTOMATED LIST SPLITTING)
     saveButton.addEventListener('click', async () => {
         const rating = parseFloat(document.getElementById('actual-rating').value);
+        
         if (currentPredictionId && !isNaN(rating)) {
+            // AUTOMATION: Taster Splitter (Colleen, Dave -> ["Colleen", "Dave"])
+            const tasterRaw = document.getElementById('user-name').value || "Colleen";
+            const tasterList = tasterRaw.split(',').map(item => item.trim()).filter(item => item !== "");
+
+            // AUTOMATION: Notes Splitter (Spice, Orange -> ["spice", "orange"])
+            const notesRaw = document.getElementById('tastingNotes').value;
+            const notesList = notesRaw.split(',').map(item => item.trim().toLowerCase()).filter(item => item !== "");
+
             try {
                 await db.collection("wine_history").doc(currentPredictionId).update({
                     actualRating: rating,
-                    tastingNotes: document.getElementById('tastingNotes').value,
-                    taster: document.getElementById('user-name').value || "Colleen",
+                    tastingNotes: notesList, // Saved as List
+                    taster: tasterList,       // Saved as List
                     wasOaky: document.getElementById('actualOaky').checked
                 });
-                alert("Lab History Updated!");
+                
+                alert("Lab History Updated! Entry is now searchable.");
                 wineForm.reset();
                 feedbackSection.style.display = "none";
-                predictBtn.disabled = false;
-                predictBtn.innerText = "Predict Our Scores";
-            } catch (err) {
-                alert(err.message);
-            }
-        }
-    });
-
-    // PHASE 3: LIVE RECENT LOGS
-    db.collection("wine_history").orderBy("timestamp", "desc").limit(5).onSnapshot(snap => {
-        const list = document.getElementById('history-list');
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            const w = doc.data();
-            const div = document.createElement('div');
-            div.className = "history-card";
-            div.innerHTML = `<strong>${w.label}</strong> <span>⭐ ${w.actualRating || 'TBD'}</span>`;
-            list.appendChild(div);
-        });
-    });
-});
