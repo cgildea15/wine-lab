@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         predictBtn.disabled = true;
         predictBtn.innerText = "Analyzing Context...";
 
+        // Fetch values safely
         const label = document.getElementById('labelName').value;
         const purchaseLocation = document.getElementById('purchaseLocation').value;
         const style = document.getElementById('wineStyle').value.toLowerCase();
@@ -30,21 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const temp = document.getElementById('temp').value;
         const setting = document.getElementById('setting').value;
 
-        // Smart List Splitters
         const regionRaw = document.getElementById('region').value;
         const regionList = regionRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
         const notesRaw = document.getElementById('predictNotes').value;
         const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
-        // PREDICTION LOGIC
+        // Basic Prediction Logic
         let cScore = 7.0; let dScore = 7.0;
-
-        // Value & Context Modifiers
-        if (price > 0 && price < 22) cScore += 0.5; // Value win
-        if (price > 65) cScore -= 0.5; // Luxury barrier
-        if (purchaseLocation === 'vineyard') cScore += 0.5;
-        
-        // Sensory Logic
         if (notesList.includes('minerals') || notesList.includes('saline')) cScore += 1.5;
         if (style.includes('orange')) cScore += 1.0;
         if (notesList.includes('oak') || notesList.includes('smoke')) dScore -= 1.5;
@@ -61,7 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('d-score-val').innerText = dScore.toFixed(1);
             feedbackSection.style.display = "block";
             predictBtn.innerText = "Saved ✅";
-        } catch (err) { alert(err.message); predictBtn.disabled = false; }
+        } catch (err) {
+            console.error(err);
+            predictBtn.disabled = false;
+            predictBtn.innerText = "Predict Our Scores";
+        }
     });
 
     saveButton.addEventListener('click', async () => {
@@ -86,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('c-score-val').innerText = "--";
                 document.getElementById('d-score-val').innerText = "--";
                 document.getElementById('buyAgain').checked = false;
-            } catch (err) { alert(err.message); }
+            } catch (err) { console.error(err); }
         }
     });
 
