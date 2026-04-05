@@ -1,12 +1,20 @@
 {
   "short_name": "Wine Lab",
   "name": "AI Wine Predictor: The Lab",
+  "description": "Personalized AI wine ratings and predictions for Colleen and Dave.",
+  "id": "com.thresholded.winelab",
   "icons": [
+    {
+      "src": "https://img.icons8.com/emoji/192/glass-of-wine.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
     {
       "src": "https://img.icons8.com/emoji/512/glass-of-wine.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
   "start_url": ".",
