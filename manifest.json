@@ -1,7 +1,7 @@
 {
   "short_name": "Wine Lab",
   "name": "AI Wine Predictor: The Lab",
-  "description": "Personalized AI wine ratings and predictions for Colleen and Dave.",
+  "description": "Personalized AI wine ratings and predictions.",
   "id": "com.thresholded.winelab",
   "icons": [
     {
