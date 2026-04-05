@@ -1,16 +1,15 @@
-/* Import a clean, modern font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 :root {
     --burgundy: #800020;
     --navy: #1a3a5f;
-    --calm-bg: #f2f4f0; /* Soft, muted sage/cream tint */
+    --calm-bg: #f2f4f0; /* Soft Sage/Cream */
     --card-bg: #ffffff;
     --text-main: #2d3436;
 }
 
 body {
-    font-family: 'Inter', -apple-system, sans-serif; /* Forces clean modern text */
+    font-family: 'Inter', sans-serif;
     background-color: var(--calm-bg);
     color: var(--text-main);
     margin: 0;
@@ -20,72 +19,49 @@ body {
     align-items: center;
 }
 
-header h1 {
-    color: var(--burgundy);
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    margin-bottom: 20px;
-}
+main { width: 100%; max-width: 480px; }
 
-main {
-    width: 100%;
-    max-width: 480px; /* Perfect for mobile */
-}
-
-/* Container Styling */
 form, #results, #cellar-history {
     background: var(--card-bg);
     padding: 24px;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     margin-bottom: 20px;
-    border: 1px solid rgba(0,0,0,0.03);
 }
 
-.input-group {
-    margin-bottom: 18px;
-    display: flex;
-    flex-direction: column;
-}
+.input-group { margin-bottom: 18px; display: flex; flex-direction: column; }
+.input-row { display: flex; gap: 12px; }
+.input-row .input-group { flex: 1; }
 
-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #555;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+label { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #555; text-transform: uppercase; }
 
-/* Uniform Input Boxes */
 input, select {
     width: 100%;
-    height: 48px; /* Slightly taller for easy tapping */
+    height: 48px;
     padding: 12px;
     border: 1.5px solid #e0e0e0;
     border-radius: 10px;
-    font-family: inherit;
-    font-size: 16px; /* Prevents iOS zoom-on-focus */
+    font-size: 16px;
     background-color: #fafafa;
-    color: var(--text-main);
     box-sizing: border-box;
-    appearance: none; /* Cleans up default mobile styles */
 }
 
-/* Modern styling for the dropdown arrow */
-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23555' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: calc(100% - 15px) center;
-}
-
-.input-row {
+/* Fix for the Toggle */
+.checkbox-group {
     display: flex;
+    align-items: center;
     gap: 12px;
+    margin: 20px 0;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 8px;
 }
 
-.input-row .input-group {
-    flex: 1;
+.checkbox-group input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    accent-color: var(--burgundy);
+    cursor: pointer;
 }
 
 button {
@@ -95,51 +71,16 @@ button {
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.2s;
 }
 
-button:active {
-    opacity: 0.8;
-}
-
-/* Result Cards */
-.score-container {
-    display: flex;
-    gap: 12px;
-}
-
-.score-card {
-    flex: 1;
-    text-align: center;
-    padding: 18px;
-    border-radius: 14px;
-    border: 1px solid transparent;
-}
-
+.score-container { display: flex; gap: 12px; }
+.score-card { flex: 1; text-align: center; padding: 18px; border-radius: 14px; border: 1px solid transparent; }
 .colleen-card { background: #fff5f6; border-color: #fce4e4; color: var(--burgundy); }
 .dave-card { background: #f0f7ff; border-color: #e1efff; color: var(--navy); }
+#c-score-val, #d-score-val { font-size: 2.4rem; font-weight: 700; }
 
-#c-score-val, #d-score-val {
-    font-size: 2.4rem;
-    font-weight: 700;
-    margin-top: 4px;
-}
+.history-card { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
 
-/* History Cards */
-.history-card {
-    padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.history-card:last-child { border-bottom: none; }
-
-/* Mobile adjustments */
-@media (max-width: 420px) {
-    .input-row { flex-direction: column; gap: 0; }
-}
+@media (max-width: 420px) { .input-row { flex-direction: column; } }
