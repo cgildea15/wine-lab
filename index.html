@@ -37,7 +37,17 @@
 
             <div class="input-group">
                 <label for="wineStyle">Style / Blend</label>
-                <input type="text" id="wineStyle" placeholder="e.g. White, Muscat Blanc">
+                <input type="text" id="wineStyle" list="style-options" placeholder="e.g. White, Muscat Blanc">
+                <datalist id="style-options">
+                    <option value="Cabernet Sauvignon">
+                    <option value="Chardonnay">
+                    <option value="Riesling">
+                    <option value="Sauvignon Blanc">
+                    <option value="Pinot Noir">
+                    <option value="Merlot">
+                    <option value="Rosé">
+                    <option value="Champagne/Sparkling">
+                </datalist>
             </div>
 
             <div class="input-row">
@@ -62,30 +72,39 @@
             <div class="input-row">
                 <div class="input-group">
                     <label for="vintage">Year</label>
-                    <input type="number" id="vintage" placeholder="2021">
+                    <input type="number" id="vintage" min="1900" max="2030" placeholder="2021">
                 </div>
                 <div class="input-group">
                     <label for="abv">ABV %</label>
-                    <input type="number" id="abv" step="0.1" placeholder="13.5">
+                    <input type="number" id="abv" step="0.1" min="0" max="25" placeholder="13.5">
                 </div>
                 <div class="input-group">
                     <label for="price">Price ($)</label>
-                    <input type="number" id="price" step="0.01" placeholder="21.99">
+                    <input type="number" id="price" step="0.01" min="0" placeholder="21.99">
                 </div>
             </div>
 
             <div class="input-group">
-                <label for="region">Region(s) (comma separated)</label>
-                <input type="text" id="region" placeholder="France, Alsace">
+                <label for="region">Region(s)</label>
+                <input type="text" id="region" list="region-options" placeholder="e.g. France, Alsace">
+                <datalist id="region-options">
+                    <option value="France, Alsace">
+                    <option value="France, Bordeaux">
+                    <option value="Italy, Tuscany">
+                    <option value="Italy, Piedmont">
+                    <option value="USA, Napa Valley">
+                    <option value="Germany, Mosel">
+                    <option value="Spain, Rioja">
+                </datalist>
             </div>
 
             <div class="input-group">
-                <label for="predictNotes">Tasting Notes (comma separated)</label>
-                <input type="text" id="predictNotes" placeholder="Raisin, Citrus, Blue Moon">
+                <label for="predictNotes">Tasting Notes</label>
+                <input type="text" id="predictNotes" placeholder="e.g. Raisin, Citrus, Saline">
             </div>
 
             <div class="input-group">
-                <label for="foodPairing">Food Pairing (comma separated)</label>
+                <label for="foodPairing">Food Pairing</label>
                 <input type="text" id="foodPairing" placeholder="e.g. Pizza, Almonds, Brie">
             </div>
 
