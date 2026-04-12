@@ -73,12 +73,24 @@ input, select {
     font-size: 16px;
     background-color: #fff;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Numeric Input Fixes - Removes Up/Down Arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
 }
 
 input:focus, select:focus {
     outline: none;
     border-color: var(--slate);
+    background-color: #fafbfc;
 }
 
 .checkbox-group {
@@ -101,7 +113,11 @@ button {
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.1s;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+button:hover {
+    background-color: #000;
 }
 
 button:active { 
@@ -125,14 +141,12 @@ button:active {
     justify-content: center;
 }
 
-/* Colleen's Style */
 .dry-card { 
     background: #f1f4f7; 
     color: var(--slate); 
     border: 1px solid #d1d9e0;
 }
 
-/* Dave's Style */
 .fruit-card { 
     background: #fff5f6; 
     color: var(--burgundy); 
