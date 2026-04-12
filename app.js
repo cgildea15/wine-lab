@@ -5,7 +5,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 let currentPredictionId = null;
 
-// Helper function for Data Integrity: Capitalizes each word (e.g., "france" -> "France")
+// Helper function for Data Integrity: Capitalizes each word (e.g., "italy" -> "Italy")
 const formatIntegrity = (str) => {
     if (!str) return "";
     return str.trim().split(' ').map(word => 
@@ -48,10 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const foodList = foodRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
             // --- PALATE-SPECIFIC PREDICTION LOGIC ---
+            // Base score starts at 7.0 (Everyday Value)
             let cScore = 7.0; // Colleen: Old World Crisp
             let dScore = 7.0; // Dave: Fruity & Smooth
 
-            // 1. COLLEEN'S LOGIC (Old World, Mineral, Saline, Earthy)
+            // 1. COLLEEN'S LOGIC (Old World, Mineral, Saline, Earthy, Tobacco)
             const oldWorldKeywords = ['mineral', 'minerals', 'saline', 'tobacco', 'earthy', 'tannins', 'tannic', 'stone'];
             const subtleFruits = ['cherry', 'raspberry', 'citrus', 'apple', 'strawberry', 'watermelon'];
             
@@ -59,34 +60,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const hasSubtleFruit = subtleFruits.some(note => notesList.includes(note));
 
             if (hasOldWorldBase) cScore += 1.5;
-            if (hasOldWorldBase && hasSubtleFruit) cScore += 1.0; 
+            if (hasOldWorldBase && hasSubtleFruit) cScore += 1.0; // Bonus for earth + fruit complexity
             if (sweetness === 'dry') cScore += 0.5;
             if (style.toLowerCase().includes('orange')) cScore += 1.0;
 
-            // 2. DAVE'S LOGIC (Fruit-Forward, Smooth, Cold)
+            // 2. DAVE'S LOGIC (Fruit-Forward, Smooth, Cold, No "Dirt" flavors)
             if (notesList.includes('apple') || notesList.includes('juice') || notesList.includes('fruity')) dScore += 1.5;
             if (notesList.includes('smooth')) dScore += 1.0;
             if (temp === 'chilled') dScore += 0.5; 
+            
+            // Region bonuses for his favorites (Italy/Portugal Reds)
             if (regionList.some(r => r.includes("Italy") || r.includes("Portugal"))) dScore += 0.7;
 
             // 3. THE "DAVE DISLIKES" FILTER
-            // Penalty for Earth/Tobacco
             if (notesList.includes('smoke') || notesList.includes('tobacco') || notesList.includes('tannic') || notesList.includes('earthy')) {
                 dScore -= 2.0; 
             }
 
-            // CRITICAL: THE BUBBLE PENALTY (Dave hates anything sparkly)
+            // CRITICAL: THE BUBBLE PENALTY (Dave hates anything sparkly/Prosecco/Cava)
             const sparklingKeywords = ['sparkling', 'champagne', 'cava', 'prosecco', 'bubbles', 'bubbly', 'carbonated', 'effervescent', 'fizz'];
             const isSparkling = sparklingKeywords.some(keyword => 
                 style.toLowerCase().includes(keyword) || notesList.includes(keyword)
             );
 
             if (isSparkling) {
-                dScore -= 4.5; // Heavy hit to ensure Dave's score stays in the "Failure" zone
+                dScore -= 4.5; 
             }
 
-            // 4. SWEETNESS & DESSERT OVERRIDES
-            if (sweetness === 'off-dry') dScore += 1.0; // Dave's "Balanced" sweet spot
+            // 4. PRICE & VALUE LOGIC (High ROI Engine)
+            let valueMod = 0;
+
+            if (purchaseLocation === 'retail') {
+                // $20 benchmark for retail bottles
+                if (price > 0 && price <= 20) valueMod = 1.0; 
+                if (price > 20) valueMod = -1.0;
+            } else if (purchaseLocation === 'restaurant') {
+                // $10 benchmark for restaurant glasses
+                if (price > 0 && price <= 10) valueMod = 1.0; 
+                if (price > 10) valueMod = -1.0;
+            }
+
+            cScore += valueMod;
+            dScore += valueMod;
+
+            // 5. SWEETNESS & DESSERT OVERRIDES
+            if (sweetness === 'off-dry') dScore += 1.0; 
             
             if (sweetness === 'sweet') {
                 cScore -= 1.5; 
@@ -94,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (sweetness === 'dessert') {
-                // Warning zone for both
                 cScore -= 3.0; 
                 dScore -= 3.0;
             }
@@ -103,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cScore = Math.max(0, Math.min(cScore, 10.0));
             dScore = Math.max(0, Math.min(dScore, 10.0));
 
-            // Save to Firebase
+            // Save Prediction to Firebase
             const docRef = await db.collection("wine_history").add({
                 label, purchaseLocation, style, vintage, abv, price, temp, setting, sweetness,
                 region: regionList, tastingNotes: notesList, foodPairing: foodList,
@@ -124,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Lab Error:", err);
             predictBtn.disabled = false;
             predictBtn.innerText = "Predict Our Scores";
-            alert("Error in the lab! Check your connection.");
+            alert("Error in the lab! Check the console.");
         }
     });
 
@@ -144,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 alert("Lab History Updated!");
+                
                 wineForm.reset();
                 feedbackSection.style.display = "none";
                 predictBtn.disabled = false;
