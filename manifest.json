@@ -2,7 +2,7 @@
   "name": "AI Wine Predictor",
   "short_name": "Wine Lab",
   "id": "com.thresholded.winelab",
-  "start_url": ".",
+  "start_url": "/index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
@@ -10,16 +10,21 @@
   "description": "Personalized wine value and quality predictor for the ultimate tasting experience.",
   "icons": [
     {
-      "src": "icon-512.jpg",
-      "type": "image/jpeg",
+      "src": "icon-512.png",
+      "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "icon-512.jpg",
-      "type": "image/jpeg",
+      "src": "icon-512.png",
+      "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
+    },
+    {
+      "src": "https://img.icons8.com/color/192/wine-glass.png",
+      "type": "image/png",
+      "sizes": "192x192"
     }
   ],
   "screenshots": [
