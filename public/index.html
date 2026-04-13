@@ -5,15 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Wine Predictor</title>
     
+    <meta name="theme-color" content="#722f37">
+    <meta name="description" content="Personalized wine value and quality predictor.">
+    <link rel="apple-touch-icon" href="icon-512.png">
+    
     <link rel="manifest" href="manifest.json">
+
+    <link rel="stylesheet" href="style.css">
 
     <script>
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js');
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('Service Worker registered', reg))
+            .catch(err => console.error('Service Worker failed', err));
+        });
       }
     </script>
-
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header><h1>🍷 AI Wine Predictor</h1></header>
