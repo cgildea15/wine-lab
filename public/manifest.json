@@ -2,7 +2,7 @@
   "name": "AI Wine Predictor",
   "short_name": "Wine Lab",
   "id": "com.thresholded.winelab",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
