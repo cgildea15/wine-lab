@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedbackSection = document.getElementById('feedback-section');
     const saveButton = document.getElementById('save-rating');
     const predictBtn = document.getElementById('predict-btn');
+    const buyAgainCheckbox = document.getElementById('buyAgain');
 
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -48,11 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const foodList = foodRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
             // --- PALATE-SPECIFIC PREDICTION LOGIC ---
-            // Base score starts at 7.0 (Everyday Value)
             let cScore = 7.0; // Colleen: Old World Crisp
             let dScore = 7.0; // Dave: Fruity & Smooth
 
-            // 1. COLLEEN'S LOGIC (Old World, Mineral, Saline, Earthy, Tobacco)
+            // 1. COLLEEN'S LOGIC
             const oldWorldKeywords = ['mineral', 'minerals', 'saline', 'tobacco', 'earthy', 'tannins', 'tannic', 'stone'];
             const subtleFruits = ['cherry', 'raspberry', 'citrus', 'apple', 'strawberry', 'watermelon'];
             
@@ -60,67 +60,50 @@ document.addEventListener('DOMContentLoaded', () => {
             const hasSubtleFruit = subtleFruits.some(note => notesList.includes(note));
 
             if (hasOldWorldBase) cScore += 1.5;
-            if (hasOldWorldBase && hasSubtleFruit) cScore += 1.0; // Bonus for earth + fruit complexity
+            if (hasOldWorldBase && hasSubtleFruit) cScore += 1.0; 
             if (sweetness === 'dry') cScore += 0.5;
             if (style.toLowerCase().includes('orange')) cScore += 1.0;
 
-            // 2. DAVE'S LOGIC (Fruit-Forward, Smooth, Cold, No "Dirt" flavors)
+            // 2. DAVE'S LOGIC
             if (notesList.includes('apple') || notesList.includes('juice') || notesList.includes('fruity')) dScore += 1.5;
             if (notesList.includes('smooth')) dScore += 1.0;
             if (temp === 'chilled') dScore += 0.5; 
             
-            // Region bonuses for his favorites (Italy/Portugal Reds)
             if (regionList.some(r => r.includes("Italy") || r.includes("Portugal"))) dScore += 0.7;
 
             // 3. THE "DAVE DISLIKES" FILTER
-            if (notesList.includes('smoke') || notesList.includes('tobacco') || notesList.includes('tannic') || notesList.includes('earthy')) {
+            if (notesList.some(note => ['smoke', 'tobacco', 'tannic', 'earthy'].includes(note))) {
                 dScore -= 2.0; 
             }
 
-            // CRITICAL: THE BUBBLE PENALTY (Dave hates anything sparkly/Prosecco/Cava)
-            const sparklingKeywords = ['sparkling', 'champagne', 'cava', 'prosecco', 'bubbles', 'bubbly', 'carbonated', 'effervescent', 'fizz'];
+            // CRITICAL: THE BUBBLE PENALTY
+            const sparklingKeywords = ['sparkling', 'champagne', 'cava', 'prosecco', 'bubbles', 'bubbly', 'fizz'];
             const isSparkling = sparklingKeywords.some(keyword => 
                 style.toLowerCase().includes(keyword) || notesList.includes(keyword)
             );
 
-            if (isSparkling) {
-                dScore -= 4.5; 
-            }
+            if (isSparkling) dScore -= 4.5; 
 
-            // 4. PRICE & VALUE LOGIC (High ROI Engine)
+            // 4. PRICE & VALUE LOGIC
             let valueMod = 0;
-
             if (purchaseLocation === 'retail') {
-                // $20 benchmark for retail bottles
-                if (price > 0 && price <= 20) valueMod = 1.0; 
-                if (price > 20) valueMod = -1.0;
+                valueMod = (price > 0 && price <= 20) ? 1.0 : -1.0;
             } else if (purchaseLocation === 'restaurant') {
-                // $10 benchmark for restaurant glasses
-                if (price > 0 && price <= 10) valueMod = 1.0; 
-                if (price > 10) valueMod = -1.0;
+                valueMod = (price > 0 && price <= 10) ? 1.0 : -1.0;
             }
-
             cScore += valueMod;
             dScore += valueMod;
 
-            // 5. SWEETNESS & DESSERT OVERRIDES
+            // 5. SWEETNESS OVERRIDES
             if (sweetness === 'off-dry') dScore += 1.0; 
-            
-            if (sweetness === 'sweet') {
-                cScore -= 1.5; 
-                dScore += 0.5; 
-            }
+            if (sweetness === 'sweet') { cScore -= 1.5; dScore += 0.5; }
+            if (sweetness === 'dessert') { cScore -= 3.0; dScore -= 3.0; }
 
-            if (sweetness === 'dessert') {
-                cScore -= 3.0; 
-                dScore -= 3.0;
-            }
-
-            // Ensure scores stay within 0.0 - 10.0
+            // Final Bounds
             cScore = Math.max(0, Math.min(cScore, 10.0));
             dScore = Math.max(0, Math.min(dScore, 10.0));
 
-            // Save Prediction to Firebase
+            // Save to Firebase
             const docRef = await db.collection("wine_history").add({
                 label, purchaseLocation, style, vintage, abv, price, temp, setting, sweetness,
                 region: regionList, tastingNotes: notesList, foodPairing: foodList,
@@ -141,13 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Lab Error:", err);
             predictBtn.disabled = false;
             predictBtn.innerText = "Predict Our Scores";
-            alert("Error in the lab! Check the console.");
+            alert("Error in the lab!");
         }
     });
 
     saveButton.addEventListener('click', async () => {
         const rating = parseFloat(document.getElementById('actual-rating').value);
-        const buyAgain = document.getElementById('buyAgain').checked;
+        // TRUE/FALSE logic for the checkbox
+        const buyAgain = buyAgainCheckbox.checked;
         const tasterRaw = document.getElementById('user-name').value || "Colleen";
         
         if (currentPredictionId && !isNaN(rating)) {
@@ -162,7 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 alert("Lab History Updated!");
                 
+                // --- RESET SEQUENCE ---
                 wineForm.reset();
+                buyAgainCheckbox.checked = false; // Manually reset checkbox state
                 feedbackSection.style.display = "none";
                 predictBtn.disabled = false;
                 predictBtn.innerText = "Predict Our Scores";
