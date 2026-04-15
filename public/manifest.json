@@ -1,13 +1,8 @@
 {
-  "name": "AI Wine Predictor",
+  "name": "AI Wine Predictor: The Lab",
   "short_name": "Wine Lab",
+  "description": "Personalized AI wine ratings and predictions.",
   "id": "com.thresholded.winelab",
-  "start_url": "https://winelab-c2f76.web.app/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#722f37",
-  "description": "Personalized wine value and quality predictor for the ultimate tasting experience.",
   "icons": [
     {
       "src": "icon-512.png",
@@ -22,14 +17,10 @@
       "purpose": "maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "splash.jpg",
-      "sizes": "1080x1920",
-      "type": "image/jpeg",
-      "form_factor": "narrow",
-      "label": "Vineyards in Florence"
-    }
-  ],
-  "categories": ["lifestyle", "food"]
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#800020",
+  "background_color": "#f8f9fa",
+  "lang": "en-US"
 }
