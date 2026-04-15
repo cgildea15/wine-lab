@@ -64,6 +64,7 @@ label {
     letter-spacing: 0.5px;
 }
 
+/* Base Input Styles */
 input, select {
     width: 100%;
     height: 50px;
@@ -74,19 +75,50 @@ input, select {
     background-color: #fff;
     box-sizing: border-box;
     transition: all 0.2s ease-in-out;
-    appearance: none; /* Modern look for selects */
+    appearance: none;
 }
 
-/* Specific styling for the Sweetness Dropdown */
+/* FIX: Specific override for Checkboxes to prevent elongation */
+input[type="checkbox"] {
+    width: 24px !important;  /* Overrides the 100% width above */
+    height: 24px !important; /* Overrides the 50px height above */
+    min-width: 24px;
+    min-height: 24px;
+    appearance: checkbox;    /* Restores standard checkbox look */
+    -webkit-appearance: checkbox;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Container for the True/False toggle */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.checkbox-group label {
+    margin-bottom: 0; /* Align perfectly with the checkbox */
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+/* Dropdown Arrow */
 #sweetness {
-    border-color: #e2e8f0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a6274'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 16px;
 }
 
-/* Numeric Input Fixes - Removes Up/Down Arrows */
+/* Numeric Input Fixes */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -101,16 +133,6 @@ input:focus, select:focus {
     outline: none;
     border-color: var(--slate);
     background-color: #fafbfc;
-}
-
-.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0;
-    padding: 15px;
-    background: #f1f5f9;
-    border-radius: 12px;
 }
 
 button {
