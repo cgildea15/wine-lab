@@ -12,38 +12,6 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 
-    <style>
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            margin: 20px 0;
-            padding: 10px;
-            background: rgba(114, 47, 55, 0.05);
-            border-radius: 8px;
-        }
-
-        /* Forces the checkbox to be a square and prevents stretching */
-        .checkbox-group input[type="checkbox"] {
-            width: 24px !important;
-            height: 24px !important;
-            min-width: 24px;
-            cursor: pointer;
-            margin: 0;
-            -webkit-appearance: checkbox;
-            appearance: checkbox;
-        }
-
-        .checkbox-group label {
-            cursor: pointer;
-            font-weight: bold;
-            color: #722f37;
-            user-select: none;
-            margin: 0;
-        }
-    </style>
-
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -76,14 +44,12 @@
 
             <div class="input-group">
                 <label>Sweetness Level</label>
-                <div class="toggle-container">
-                    <select id="sweetness">
-                        <option value="dry">🌵 Dry</option>
-                        <option value="off-dry">🍑 Off-Dry (Balanced)</option>
-                        <option value="sweet">🍯 Sweet </option>
-                        <option value="dessert">🍷 Dessert / Fortified </option>
-                    </select>
-                </div>
+                <select id="sweetness">
+                    <option value="dry">🌵 Dry</option>
+                    <option value="off-dry">🍑 Off-Dry (Balanced)</option>
+                    <option value="sweet">🍯 Sweet </option>
+                    <option value="dessert">🍷 Dessert / Fortified </option>
+                </select>
             </div>
 
             <div class="input-group">
