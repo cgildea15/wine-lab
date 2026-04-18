@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 :root {
-    --burgundy: #800020; /* Accent for Fruity/Smooth */
-    --slate: #4a6274;    /* Accent for Old World/Crisp */
+    --burgundy: #800020;
+    --slate: #4a6274;
     --calm-bg: #f8f9fa;
     --card-bg: #ffffff;
     --text-main: #2d3436;
@@ -19,10 +19,7 @@ body {
     align-items: center;
 }
 
-main { 
-    width: 100%; 
-    max-width: 480px; 
-}
+main { width: 100%; max-width: 480px; }
 
 header h1 {
     font-size: 1.5rem;
@@ -39,58 +36,36 @@ form, #results, #cellar-history {
     margin-bottom: 20px;
 }
 
-/* FORM STYLING */
-.input-group { 
-    margin-bottom: 18px; 
-    display: flex; 
-    flex-direction: column; 
-}
-
-.input-row { 
-    display: flex; 
-    gap: 12px; 
-}
-
-.input-row .input-group { 
-    flex: 1; 
-}
+.input-group { margin-bottom: 18px; display: flex; flex-direction: column; }
+.input-row { display: flex; gap: 12px; }
+.input-row .input-group { flex: 1; }
 
 label { 
-    font-size: 0.75rem; 
-    font-weight: 700; 
-    margin-bottom: 6px; 
-    color: #7f8c8d; 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px;
+    font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; 
+    color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px;
 }
 
-/* Base Input Styles */
 input, select {
-    width: 100%;
-    height: 50px;
-    padding: 12px;
-    border: 2px solid #edf2f7;
-    border-radius: 12px;
-    font-size: 16px;
-    background-color: #fff;
-    box-sizing: border-box;
-    transition: all 0.2s ease-in-out;
+    width: 100%; height: 50px; padding: 12px;
+    border: 2px solid #edf2f7; border-radius: 12px;
+    font-size: 16px; background-color: #fff;
+    box-sizing: border-box; transition: all 0.2s;
     appearance: none;
 }
 
-/* FIX: Specific override for Checkboxes to prevent elongation */
+/* --- FIXED CHECKBOX STYLING --- */
 input[type="checkbox"] {
-    width: 24px !important;  /* Overrides the 100% width above */
-    height: 24px !important; /* Overrides the 50px height above */
-    min-width: 24px;
-    min-height: 24px;
-    appearance: checkbox;    /* Restores standard checkbox look */
-    -webkit-appearance: checkbox;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    margin: 0 !important;
+    vertical-align: middle;
     cursor: pointer;
-    margin: 0;
+    -webkit-appearance: checkbox !important;
+    appearance: checkbox !important;
 }
 
-/* Container for the True/False toggle */
 .checkbox-group {
     display: flex;
     align-items: center;
@@ -104,10 +79,8 @@ input[type="checkbox"] {
 }
 
 .checkbox-group label {
-    margin-bottom: 0; /* Align perfectly with the checkbox */
-    color: var(--text-main);
-    cursor: pointer;
-    font-size: 0.85rem;
+    margin-bottom: 0; color: var(--text-main);
+    cursor: pointer; font-size: 0.85rem; font-weight: bold;
 }
 
 /* Dropdown Arrow */
@@ -118,148 +91,36 @@ input[type="checkbox"] {
     background-size: 16px;
 }
 
-/* Numeric Input Fixes */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--slate);
-    background-color: #fafbfc;
-}
+input:focus, select:focus { outline: none; border-color: var(--slate); background-color: #fafbfc; }
 
 button {
-    width: 100%;
-    padding: 18px;
-    background-color: var(--text-main);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
+    width: 100%; padding: 18px; background-color: var(--text-main);
+    color: white; border: none; border-radius: 14px;
+    font-weight: 700; font-size: 1rem; cursor: pointer;
     transition: transform 0.1s, background-color 0.2s;
 }
 
-button:hover {
-    background-color: #000;
-}
-
-button:active { 
-    transform: scale(0.98); 
-}
+button:hover { background-color: #000; }
+button:active { transform: scale(0.98); }
 
 /* SCORE CARDS */
-.score-container { 
-    display: flex; 
-    gap: 12px; 
-    margin-bottom: 20px; 
-}
-
+.score-container { display: flex; gap: 12px; margin-bottom: 20px; }
 .score-card { 
-    flex: 1; 
-    text-align: center; 
-    padding: 24px 10px; 
-    border-radius: 16px; 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex: 1; text-align: center; padding: 24px 10px; 
+    border-radius: 16px; display: flex; flex-direction: column;
 }
+.dry-card { background: #f1f4f7; color: var(--slate); border: 1px solid #d1d9e0; }
+.fruit-card { background: #fff5f6; color: var(--burgundy); border: 1px solid #f9dadd; }
+.score-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; }
+#c-score-val, #d-score-val { font-size: 2.8rem; font-weight: 800; line-height: 1; }
 
-.dry-card { 
-    background: #f1f4f7; 
-    color: var(--slate); 
-    border: 1px solid #d1d9e0;
-}
+/* LEGEND & HISTORY */
+.score-legend { margin-top: 25px; padding: 15px; background: #fafafa; border-radius: 12px; }
+.score-legend li { display: flex; justify-content: space-between; padding: 10px 0; font-size: 0.85rem; border-bottom: 1px solid #eee; }
+.unicorn-tier span { background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 6px; }
+.failure-tier span { background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 6px; }
 
-.fruit-card { 
-    background: #fff5f6; 
-    color: var(--burgundy); 
-    border: 1px solid #f9dadd;
-}
-
-.score-label { 
-    font-size: 0.7rem; 
-    font-weight: 800; 
-    letter-spacing: 1px; 
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-
-#c-score-val, #d-score-val { 
-    font-size: 2.8rem; 
-    font-weight: 800; 
-    line-height: 1; 
-}
-
-/* LEGEND STYLING */
-.score-legend { 
-    margin-top: 25px; 
-    padding: 15px; 
-    background: #fafafa; 
-    border-radius: 12px;
-}
-
-.score-legend h4 { 
-    font-size: 0.8rem; 
-    color: #a0aec0; 
-    margin-bottom: 12px; 
-    text-align: center; 
-    text-transform: uppercase; 
-}
-
-.score-legend ul { 
-    list-style: none; 
-    padding: 0; 
-    margin: 0; 
-}
-
-.score-legend li { 
-    display: flex; 
-    justify-content: space-between; 
-    padding: 10px 0; 
-    font-size: 0.85rem; 
-    border-bottom: 1px solid #eee; 
-}
-
-.score-legend li:last-child { 
-    border-bottom: none; 
-}
-
-.score-legend span { 
-    font-weight: 700; 
-    min-width: 80px; 
-    text-align: center; 
-    border-radius: 6px; 
-    padding: 2px 0; 
-}
-
-.unicorn-tier span { 
-    background: #fef3c7; 
-    color: #92400e; 
-}
-
-.failure-tier span { 
-    background: #fee2e2; 
-    color: #991b1b; 
-}
-
-/* HISTORY */
 .history-card { 
-    padding: 15px; 
-    border-bottom: 1px solid #f1f5f9; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-}
-
-.history-card:last-child { 
-    border-bottom: none; 
+    padding: 15px; border-bottom: 1px solid #f1f5f9; 
+    display: flex; justify-content: space-between; align-items: center; 
 }
