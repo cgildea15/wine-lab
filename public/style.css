@@ -46,7 +46,6 @@ label {
 }
 
 /* --- TEXT INPUT & SELECT FIX --- */
-/* We use :not([type="checkbox"]) so that checkbox styling is handled separately below */
 input:not([type="checkbox"]), select {
     width: 100%; height: 50px; padding: 12px;
     border: 2px solid #edf2f7; border-radius: 12px;
@@ -55,17 +54,18 @@ input:not([type="checkbox"]), select {
     appearance: none;
 }
 
-/* --- FIXED CHECKBOX STYLING --- */
-input[type="checkbox"] {
-    display: inline-block;
+/* --- NUCLEAR CHECKBOX FIX --- */
+input#buyAgain {
     width: 24px !important;
     height: 24px !important;
     min-width: 24px !important;
-    margin: 0 !important;
-    cursor: pointer;
-    -webkit-appearance: checkbox !important;
+    max-width: 24px !important;
     appearance: checkbox !important;
-    flex-shrink: 0;
+    -webkit-appearance: checkbox !important;
+    flex: 0 0 24px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    cursor: pointer !important;
 }
 
 .checkbox-group {
