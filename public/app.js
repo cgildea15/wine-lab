@@ -1,11 +1,8 @@
 // AI Wine Predictor - Main Logic
-// Note: firebaseConfig is loaded from the external config.js file for security.
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 let currentPredictionId = null;
 
-// Helper function for Data Integrity: Capitalizes each word (e.g., "italy" -> "Italy")
 const formatIntegrity = (str) => {
     if (!str) return "";
     return str.trim().split(' ').map(word => 
@@ -26,100 +23,82 @@ document.addEventListener('DOMContentLoaded', () => {
         predictBtn.innerText = "Analyzing Context...";
 
         try {
-            // Raw Inputs & Formatting
             const label = formatIntegrity(document.getElementById('labelName').value);
             const purchaseLocation = document.getElementById('purchaseLocation').value;
             const sweetness = document.getElementById('sweetness').value;
             const style = formatIntegrity(document.getElementById('wineStyle').value);
-            
             const vintage = parseInt(document.getElementById('vintage').value) || 0;
             const abv = parseFloat(document.getElementById('abv').value) || 0;
             const price = parseFloat(document.getElementById('price').value) || 0;
             const temp = document.getElementById('temp').value;
             const setting = document.getElementById('setting').value;
 
-            // List Processing
             const regionRaw = document.getElementById('region').value;
             const regionList = regionRaw.split(',').map(i => formatIntegrity(i)).filter(i => i !== "");
-            
             const notesRaw = document.getElementById('predictNotes').value;
             const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
-            
             const foodRaw = document.getElementById('foodPairing').value;
             const foodList = foodRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
             // --- PALATE-SPECIFIC PREDICTION LOGIC ---
-            let cScore = 7.0; // Colleen: Old World Crisp
-            let dScore = 7.0; // Dave: Fruity & Smooth
+            let cScore = 7.0; 
+            let dScore = 7.0;
 
             // 1. COLLEEN'S LOGIC
             const oldWorldKeywords = ['mineral', 'minerals', 'saline', 'tobacco', 'earthy', 'tannins', 'tannic', 'stone'];
             const subtleFruits = ['cherry', 'raspberry', 'citrus', 'apple', 'strawberry', 'watermelon'];
-            
-            const hasOldWorldBase = oldWorldKeywords.some(note => notesList.includes(note));
-            const hasSubtleFruit = subtleFruits.some(note => notesList.includes(note));
-
-            if (hasOldWorldBase) cScore += 1.5;
-            if (hasOldWorldBase && hasSubtleFruit) cScore += 1.0; 
+            if (oldWorldKeywords.some(note => notesList.includes(note))) cScore += 1.5;
+            if (notesList.some(note => subtleFruits.includes(note))) cScore += 1.0;
             if (sweetness === 'dry') cScore += 0.5;
-            if (style.toLowerCase().includes('orange')) cScore += 1.0;
 
             // 2. DAVE'S LOGIC
-            if (notesList.includes('apple') || notesList.includes('juice') || notesList.includes('fruity')) dScore += 1.5;
+            if (notesList.some(note => ['apple', 'juice', 'fruity'].includes(note))) dScore += 1.5;
             if (notesList.includes('smooth')) dScore += 1.0;
-            if (temp === 'chilled') dScore += 0.5; 
-            
+            if (temp === 'chilled') dScore += 0.5;
             if (regionList.some(r => r.includes("Italy") || r.includes("Portugal"))) dScore += 0.7;
+            if (notesList.some(note => ['smoke', 'tobacco', 'tannic', 'earthy'].includes(note))) dScore -= 2.0;
 
-            // 3. THE "DAVE DISLIKES" FILTER
-            if (notesList.some(note => ['smoke', 'tobacco', 'tannic', 'earthy'].includes(note))) {
-                dScore -= 2.0; 
+            // 3. THE BUBBLE PENALTY
+            if (style.toLowerCase().includes('sparkling') || notesList.includes('bubbles')) dScore -= 4.5;
+
+            // 4. PRICE & VALUE LOGIC (NEW CEILING & CONTEXT PENALTIES)
+            let priceCeiling = 10.0;
+            if (price > 0 && price < 10) priceCeiling = 8.0;
+            else if (price >= 10 && price < 20) priceCeiling = 9.0;
+
+            // Contextual Penalty: Lower scores for "low-effort" pairings
+            const lowEffortPairings = ['popcorn', 'no food', 'chips', 'potato chips'];
+            if (foodList.some(food => lowEffortPairings.includes(food))) {
+                cScore -= 1.0;
+                dScore -= 1.0;
             }
 
-            // CRITICAL: THE BUBBLE PENALTY
-            const sparklingKeywords = ['sparkling', 'champagne', 'cava', 'prosecco', 'bubbles', 'bubbly', 'fizz'];
-            const isSparkling = sparklingKeywords.some(keyword => 
-                style.toLowerCase().includes(keyword) || notesList.includes(keyword)
-            );
-
-            if (isSparkling) dScore -= 4.5; 
-
-            // 4. PRICE & VALUE LOGIC
-            let valueMod = 0;
-            if (purchaseLocation === 'retail') {
-                valueMod = (price > 0 && price <= 20) ? 1.0 : -1.0;
-            } else if (purchaseLocation === 'restaurant') {
-                valueMod = (price > 0 && price <= 10) ? 1.0 : -1.0;
-            }
+            // Apply Ceiling and Value Modifiers
+            let valueMod = (purchaseLocation === 'retail' && price <= 20) || (purchaseLocation === 'restaurant' && price <= 10) ? 1.0 : -1.0;
             cScore += valueMod;
             dScore += valueMod;
 
-            // 5. SWEETNESS OVERRIDES
-            if (sweetness === 'off-dry') dScore += 1.0; 
-            if (sweetness === 'sweet') { cScore -= 1.5; dScore += 0.5; }
-            if (sweetness === 'dessert') { cScore -= 3.0; dScore -= 3.0; }
+            // Apply Hard Ceiling
+            cScore = Math.min(cScore, priceCeiling);
+            dScore = Math.min(dScore, priceCeiling);
 
             // Final Bounds
-            cScore = Math.max(0, Math.min(cScore, 10.0));
-            dScore = Math.max(0, Math.min(dScore, 10.0));
+            cScore = Math.max(0, cScore).toFixed(1);
+            dScore = Math.max(0, dScore).toFixed(1);
 
             // Save to Firebase
             const docRef = await db.collection("wine_history").add({
                 label, purchaseLocation, style, vintage, abv, price, temp, setting, sweetness,
                 region: regionList, tastingNotes: notesList, foodPairing: foodList,
-                predictedColleen: cScore, predictedDave: dScore,
+                predictedColleen: parseFloat(cScore), predictedDave: parseFloat(dScore),
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
             currentPredictionId = docRef.id;
-
-            // Display Results
-            document.getElementById('c-score-val').innerText = cScore.toFixed(1);
-            document.getElementById('d-score-val').innerText = dScore.toFixed(1);
-            
+            document.getElementById('c-score-val').innerText = cScore;
+            document.getElementById('d-score-val').innerText = dScore;
             feedbackSection.style.display = "block";
             predictBtn.innerText = "Saved ✅";
-
         } catch (err) {
             console.error("Lab Error:", err);
             predictBtn.disabled = false;
@@ -130,46 +109,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveButton.addEventListener('click', async () => {
         const rating = parseFloat(document.getElementById('actual-rating').value);
-        // TRUE/FALSE logic for the checkbox
         const buyAgain = buyAgainCheckbox.checked;
         const tasterRaw = document.getElementById('user-name').value || "Colleen";
         
         if (currentPredictionId && !isNaN(rating)) {
             const tasterList = tasterRaw.split(',').map(i => formatIntegrity(i)).filter(i => i !== "");
-
-            try {
-                await db.collection("wine_history").doc(currentPredictionId).update({
-                    actualRating: rating,
-                    buyAgain: buyAgain,
-                    taster: tasterList
-                });
-                
-                alert("Lab History Updated!");
-                
-                // --- RESET SEQUENCE ---
-                wineForm.reset();
-                buyAgainCheckbox.checked = false; // Manually reset checkbox state
-                feedbackSection.style.display = "none";
-                predictBtn.disabled = false;
-                predictBtn.innerText = "Predict Our Scores";
-                document.getElementById('c-score-val').innerText = "--";
-                document.getElementById('d-score-val').innerText = "--";
-            } catch (err) { console.error("Update Error:", err); }
+            await db.collection("wine_history").doc(currentPredictionId).update({
+                actualRating: rating, buyAgain, taster: tasterList
+            });
+            alert("Lab History Updated!");
+            location.reload(); // Cleanest way to reset the app state
         } else {
             alert("Enter a rating before saving!");
         }
-    });
-
-    // History Listener
-    db.collection("wine_history").orderBy("timestamp", "desc").limit(5).onSnapshot(snap => {
-        const list = document.getElementById('history-list');
-        list.innerHTML = "";
-        snap.forEach(doc => {
-            const w = doc.data();
-            const div = document.createElement('div');
-            div.className = "history-card";
-            div.innerHTML = `<strong>${w.label}</strong> <span>⭐ ${w.actualRating || 'TBD'}</span>`;
-            list.appendChild(div);
-        });
     });
 });
