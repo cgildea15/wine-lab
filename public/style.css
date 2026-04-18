@@ -45,7 +45,9 @@ label {
     color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px;
 }
 
-input, select {
+/* --- TEXT INPUT & SELECT FIX --- */
+/* We use :not([type="checkbox"]) so that checkbox styling is handled separately below */
+input:not([type="checkbox"]), select {
     width: 100%; height: 50px; padding: 12px;
     border: 2px solid #edf2f7; border-radius: 12px;
     font-size: 16px; background-color: #fff;
@@ -55,15 +57,15 @@ input, select {
 
 /* --- FIXED CHECKBOX STYLING --- */
 input[type="checkbox"] {
+    display: inline-block;
     width: 24px !important;
     height: 24px !important;
     min-width: 24px !important;
-    min-height: 24px !important;
     margin: 0 !important;
-    vertical-align: middle;
     cursor: pointer;
     -webkit-appearance: checkbox !important;
     appearance: checkbox !important;
+    flex-shrink: 0;
 }
 
 .checkbox-group {
