@@ -45,43 +45,41 @@ document.addEventListener('DOMContentLoaded', () => {
             let cScore = 5.0; 
             let dScore = 5.0;
 
-            // 2. KEYWORD MAPPING
-            const earthyNotes = ['smoke', 'tobacco', 'tannic', 'tannins', 'earthy', 'leather'];
-            const fruitNotes = ['apple', 'juice', 'fruity', 'cherry', 'red berry', 'pineapple'];
-            const structureNotes = ['mineral', 'minerals', 'saline', 'acid'];
+            // 2. PROFILE DETECTION
+            const oldWorldKeywords = ['mineral', 'minerals', 'saline', 'tobacco', 'earthy', 'tannic', 'stone', 'petroleum'];
+            const fruitForwardKeywords = ['apple', 'juice', 'fruity', 'cherry', 'pineapple', 'vanilla', 'tropical', 'red berry'];
             
-            const hasEarthy = notesList.some(n => earthyNotes.includes(n));
-            const hasFruit = notesList.some(n => fruitNotes.includes(n));
-            const hasStructure = notesList.some(n => structureNotes.includes(n));
+            const isOldWorld = notesList.some(n => oldWorldKeywords.includes(n));
+            const isFruitForward = notesList.some(n => fruitForwardKeywords.includes(n));
 
-            // 3. PALATE ADJUSTMENTS
-            if (hasStructure) cScore += 2.0;
-            if (hasEarthy) cScore += 1.5;
-            if (hasFruit) dScore += 2.0;
-            if (notesList.includes('smooth')) dScore += 1.5;
+            // 3. MUTUALLY EXCLUSIVE LOGIC PATHS
+            if (isOldWorld) {
+                cScore += 2.5; // Colleen's preferred profile
+                dScore -= 1.0; // Dave finds these less accessible
+            } else if (isFruitForward) {
+                dScore += 2.5; // Dave's preferred profile
+                cScore -= 1.0; // Colleen finds these less interesting
+            }
 
-            // 4. CROSS-PALATE PENALTIES (Dislike Triggers)
-            if (hasEarthy && (hasFruit || notesList.includes('smooth'))) dScore -= 2.0;
-            if (hasFruit && hasStructure) cScore -= 2.0;
-
-            // 5. REGION LOGIC
+            // 4. REGION & ORIGIN BOOSTS
             const isEurope = regionList.some(r => ['Italy', 'France', 'Portugal', 'Spain', 'Germany'].includes(r));
-            const isCalifornia = regionList.some(r => r.includes('USA') || r.includes('California'));
-            if (isEurope) cScore += 1.0;
-            if (isCalifornia) dScore += 1.0;
+            if (isEurope) cScore += 0.5;
 
-            // 6. PRICE & CONTEXT PENALTIES
+            // 5. PRICE & UNICORN GUARDRAILS (Strict)
             let priceCeiling = 10.0;
-            if (price <= 0 || price < 10) {
-                priceCeiling = 6.0; // Budget cap
+            if (price < 10) {
+                priceCeiling = 5.5; // Absolute max for a sub-$10 bottle
                 cScore -= 1.0;
                 dScore -= 1.0;
             } else if (price >= 10 && price < 20) {
-                priceCeiling = 8.5; // Mid-range cap
+                priceCeiling = 8.0; // Mid-range cap
             } else if (price >= 20 && price < 50) {
                 priceCeiling = 9.0;
+            } else {
+                priceCeiling = 9.5; // True unicorns are rare
             }
 
+            // 6. CONTEXTUAL PENALTY
             const lowEffort = ['popcorn', 'no food', 'chips', 'potato chips', 'gas station'];
             if (foodList.some(f => lowEffort.includes(f))) {
                 cScore -= 1.5;
