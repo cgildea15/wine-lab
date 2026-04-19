@@ -37,15 +37,13 @@ form, #results, #cellar-history {
 }
 
 .input-group { margin-bottom: 18px; display: flex; flex-direction: column; }
-.input-row { display: flex; gap: 12px; }
-.input-row .input-group { flex: 1; }
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 label { 
     font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; 
     color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px;
 }
 
-/* --- TEXT INPUT & SELECT FIX --- */
 input:not([type="checkbox"]):not(#buyAgain), select {
     width: 100%; height: 50px; padding: 12px;
     border: 2px solid #edf2f7; border-radius: 12px;
@@ -54,70 +52,7 @@ input:not([type="checkbox"]):not(#buyAgain), select {
     appearance: none;
 }
 
-/* --- TOGGLE SWITCH STYLING --- */
-.toggle-group {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin: 20px 0;
-    padding: 15px;
-    background: #f1f5f9;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
-    flex-shrink: 0;
-}
-
-/* Hide default HTML checkbox */
-.switch input { opacity: 0; width: 0; height: 0; }
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-
-input:checked + .slider { background-color: var(--text-main); }
-input:checked + .slider:before { transform: translateX(24px); }
-
-.toggle-label {
-    font-weight: 700;
-    color: var(--text-main);
-    cursor: pointer;
-    font-size: 0.85rem;
-    margin: 0;
-}
-
-/* Dropdown Arrow */
-#sweetness {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a6274'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-}
-
-input:focus, select:focus { outline: none; border-color: var(--slate); background-color: #fafbfc; }
+input:focus, select:focus { outline: 3px solid #bfdbfe; border-color: var(--slate); }
 
 button {
     width: 100%; padding: 18px; background-color: var(--text-main);
@@ -140,12 +75,7 @@ button:active { transform: scale(0.98); }
 .score-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; }
 #c-score-val, #d-score-val { font-size: 2.8rem; font-weight: 800; line-height: 1; }
 
-/* LEGEND & HISTORY */
-.score-legend { margin-top: 25px; padding: 15px; background: #fafafa; border-radius: 12px; }
-.score-legend li { display: flex; justify-content: space-between; padding: 10px 0; font-size: 0.85rem; border-bottom: 1px solid #eee; }
-.unicorn-tier span { background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 6px; }
-.failure-tier span { background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 6px; }
-
+/* HISTORY */
 .history-card { 
     padding: 15px; border-bottom: 1px solid #f1f5f9; 
     display: flex; justify-content: space-between; align-items: center; 

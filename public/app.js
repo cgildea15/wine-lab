@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, limit, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
 const formatIntegrity = (str) => {
     if (!str) return "";
@@ -7,24 +7,17 @@ const formatIntegrity = (str) => {
     ).join(' ');
 };
 
-// Function to fetch and display recent history
 const loadHistory = async () => {
     const historyList = document.getElementById('history-list');
     const q = query(collection(window.db, "wine_history"), orderBy("timestamp", "desc"), limit(5));
     const querySnapshot = await getDocs(q);
-    
-    historyList.innerHTML = ""; // Clear current
+    historyList.innerHTML = "";
     querySnapshot.forEach((doc) => {
         const data = doc.data();
         const card = document.createElement('div');
         card.className = 'history-card';
-        card.innerHTML = `
-            <div>
-                <strong>${data.label}</strong><br>
-                <small>${data.style} • ${data.vintage}</small>
-            </div>
-            <div><strong>${data.actualRating || '-'}</strong></div>
-        `;
+        card.innerHTML = `<div><strong>${data.label}</strong><br><small>${data.style}</small></div>
+                          <div><strong>${data.actualRating || '-'}</strong></div>`;
         historyList.appendChild(card);
     });
 };
@@ -32,69 +25,66 @@ const loadHistory = async () => {
 document.addEventListener('DOMContentLoaded', () => {
     const wineForm = document.getElementById('wine-form');
     const predictBtn = document.getElementById('predict-btn');
+    const finalLogBtn = document.getElementById('final-log-btn');
+    let currentDocId = null; // Store ID for second-stage update
 
-    // Load history on startup
     loadHistory();
 
+    // STAGE 1: PREDICTION
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         predictBtn.disabled = true;
-        predictBtn.innerText = "Analyzing & Logging...";
+        predictBtn.innerText = "Analyzing...";
 
-        try {
-            // 1. Gather all inputs
-            const label = formatIntegrity(document.getElementById('labelName').value);
-            const purchaseLocation = document.getElementById('purchaseLocation').value;
-            const sweetness = document.getElementById('sweetness').value;
-            const style = formatIntegrity(document.getElementById('wineStyle').value);
-            const vintage = parseInt(document.getElementById('vintage').value) || 0;
-            const price = parseFloat(document.getElementById('price').value) || 0;
-            const notesRaw = document.getElementById('predictNotes').value;
-            const actualRating = parseFloat(document.getElementById('actual-rating').value) || null;
-            const buyAgain = document.getElementById('buyAgain').value === 'true';
+        const label = formatIntegrity(document.getElementById('labelName').value);
+        const style = formatIntegrity(document.getElementById('wineStyle').value);
+        const price = parseFloat(document.getElementById('price').value) || 0;
+        const notesRaw = document.getElementById('predictNotes').value;
+        const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
-            const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
+        // Refined Scoring Logic
+        let oldWorldScore = 5.0; 
+        let fruitScore = 5.0;
+        const oldWorld = ['mineral', 'saline', 'acid', 'earthy', 'tobacco', 'smoke', 'tannin', 'tannic', 'fuzzy', 'citrus', 'lemon'];
+        const fruitForward = ['vanilla', 'tropical', 'apple', 'berry', 'cherry'];
 
-            // 2. Prediction Logic
-            let cScore = 5.0; 
-            let dScore = 5.0;
-            const oldWorldKeywords = ['mineral', 'saline', 'earthy', 'tannic', 'stone'];
-            const fruitForwardKeywords = ['apple', 'fruity', 'cherry', 'pineapple', 'vanilla'];
-            
-            if (notesList.some(n => oldWorldKeywords.includes(n))) {
-                cScore += 2.5; dScore -= 1.0;
-            } else if (notesList.some(n => fruitForwardKeywords.includes(n))) {
-                dScore += 2.5; cScore -= 1.0;
-            }
+        if (notesList.some(n => oldWorld.includes(n))) { oldWorldScore += 2.0; fruitScore -= 1.5; }
+        if (notesList.some(n => fruitForward.includes(n))) { fruitScore += 2.0; oldWorldScore -= 1.5; }
 
-            // 3. Save to Firebase
-            await addDoc(collection(window.db, "wine_history"), {
-                label, purchaseLocation, style, vintage, price, sweetness,
-                tastingNotes: notesList,
-                actualRating,
-                buyAgain,
-                predictedColleen: parseFloat(cScore.toFixed(1)), 
-                predictedDave: parseFloat(dScore.toFixed(1)),
-                timestamp: new Date()
-            });
+        let maxCap = (price < 10) ? 7.0 : (price < 20 ? 8.0 : 9.0);
+        oldWorldScore = Math.min(Math.max(4.9, oldWorldScore), maxCap);
+        fruitScore = Math.min(Math.max(4.9, fruitScore), maxCap);
 
-            // 4. Update UI
-            document.getElementById('c-score-val').innerText = cScore.toFixed(1);
-            document.getElementById('d-score-val').innerText = dScore.toFixed(1);
-            document.getElementById('results').style.display = "block";
-            
-            predictBtn.disabled = false;
-            predictBtn.innerText = "Predict & Log Rating";
-            
-            // Refresh history list
-            loadHistory();
-            alert("Prediction saved to your lab!");
+        const docRef = await addDoc(collection(window.db, "wine_history"), {
+            label, style, purchaseLocation: document.getElementById('purchaseLocation').value,
+            sweetness: document.getElementById('sweetness').value,
+            vintage: parseInt(document.getElementById('vintage').value),
+            price,
+            predictedCrisp: parseFloat(oldWorldScore.toFixed(1)),
+            predictedSmooth: parseFloat(fruitScore.toFixed(1)),
+            timestamp: new Date()
+        });
 
-        } catch (err) {
-            console.error("Lab Error:", err);
-            predictBtn.disabled = false;
-            predictBtn.innerText = "Predict & Log Rating";
-            alert("Error in the lab!");
-        }
+        currentDocId = docRef.id;
+        document.getElementById('c-score-val').innerText = oldWorldScore.toFixed(1);
+        document.getElementById('d-score-val').innerText = fruitScore.toFixed(1);
+        
+        document.getElementById('results').style.display = "block";
+        document.getElementById('feedback-stage').style.display = "block";
+        document.getElementById('prediction-stage').style.display = "none";
+    });
+
+    // STAGE 2: FINAL LOG
+    finalLogBtn.addEventListener('click', async () => {
+        if (!currentDocId) return;
+        await updateDoc(doc(window.db, "wine_history", currentDocId), {
+            temp: document.getElementById('temp').value,
+            setting: document.getElementById('setting').value,
+            actualStyle: document.getElementById('actualStyle').value,
+            actualRating: parseFloat(document.getElementById('actual-rating').value),
+            buyAgain: document.getElementById('buyAgain').value === 'true'
+        });
+        alert("Discovery logged!");
+        location.reload();
     });
 });
