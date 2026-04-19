@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wineForm = document.getElementById('wine-form');
     const predictBtn = document.getElementById('predict-btn');
     const finalLogBtn = document.getElementById('final-log-btn');
-    let currentDocId = null; // Store ID for second-stage update
+    let currentDocId = null;
 
     loadHistory();
 
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const notesRaw = document.getElementById('predictNotes').value;
         const notesList = notesRaw.split(',').map(i => i.trim().toLowerCase()).filter(i => i !== "");
 
-        // Refined Scoring Logic
+        // Scoring Logic
         let oldWorldScore = 5.0; 
         let fruitScore = 5.0;
         const oldWorld = ['mineral', 'saline', 'acid', 'earthy', 'tobacco', 'smoke', 'tannin', 'tannic', 'fuzzy', 'citrus', 'lemon'];
@@ -77,14 +77,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // STAGE 2: FINAL LOG
     finalLogBtn.addEventListener('click', async () => {
         if (!currentDocId) return;
-        await updateDoc(doc(window.db, "wine_history", currentDocId), {
-            temp: document.getElementById('temp').value,
-            setting: document.getElementById('setting').value,
-            actualStyle: document.getElementById('actualStyle').value,
-            actualRating: parseFloat(document.getElementById('actual-rating').value),
-            buyAgain: document.getElementById('buyAgain').value === 'true'
-        });
-        alert("Discovery logged!");
-        location.reload();
+        try {
+            await updateDoc(doc(window.db, "wine_history", currentDocId), {
+                temp: document.getElementById('temp').value,
+                setting: document.getElementById('setting').value,
+                foodPairing: document.getElementById('foodPairing').value, // Captured new input
+                actualStyle: document.getElementById('actualStyle').value,
+                actualRating: parseFloat(document.getElementById('actual-rating').value),
+                buyAgain: document.getElementById('buyAgain').value === 'true'
+            });
+            alert("Discovery logged!");
+            location.reload();
+        } catch (err) {
+            console.error("Error finalizing:", err);
+            alert("Error saving your log.");
+        }
     });
 });

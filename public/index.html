@@ -18,7 +18,7 @@
                 
                 <div class="input-group">
                     <label for="labelName">Vineyard / Label Name</label>
-                    <input type="text" id="labelName" required placeholder="e.g. Domaine Weinbach">
+                    <input type="text" id="labelName" required placeholder="e.g. Domaine Weinbach Muscat">
                 </div>
 
                 <div class="input-row">
@@ -79,10 +79,17 @@
                     <div class="input-group">
                         <label for="setting">Setting</label>
                         <select id="setting">
-                            <option value="outdoors">☀️ Outdoors</option>
-                            <option value="indoors">🏠 Indoors</option>
+                            <option value="afternoon_in">☀️ Afternoon Inside</option>
+                            <option value="afternoon_out">🌳 Afternoon Outside</option>
+                            <option value="evening_in">🌙 Evening Inside</option>
+                            <option value="evening_out">🌃 Evening Outside</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="foodPairing">Food Pairing (Optional)</label>
+                    <input type="text" id="foodPairing" placeholder="e.g. Grilled Salmon, Pasta">
                 </div>
 
                 <div class="input-group">

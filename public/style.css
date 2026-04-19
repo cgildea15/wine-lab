@@ -64,6 +64,9 @@ button {
 button:hover { background-color: #000; }
 button:active { transform: scale(0.98); }
 
+/* STAGE MANAGEMENT */
+#feedback-stage { margin-top: 20px; }
+
 /* SCORE CARDS */
 .score-container { display: flex; gap: 12px; margin-bottom: 20px; }
 .score-card { 
