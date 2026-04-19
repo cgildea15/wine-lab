@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Wine Predictor</title>
     <meta name="theme-color" content="#722f37">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon-512.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -97,7 +99,6 @@
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
       import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-      // Ensure your config.js exports firebaseConfig, or paste it here:
       import { firebaseConfig } from "./config.js"; 
       
       const app = initializeApp(firebaseConfig);
