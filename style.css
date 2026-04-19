@@ -46,7 +46,8 @@ label {
 }
 
 /* --- TEXT INPUT & SELECT FIX --- */
-input:not([type="checkbox"]), select {
+/* Added :not(#buyAgain) to ensure the toggle input is NOT styled like a text box */
+input:not([type="checkbox"]):not(#buyAgain), select {
     width: 100%; height: 50px; padding: 12px;
     border: 2px solid #edf2f7; border-radius: 12px;
     font-size: 16px; background-color: #fff;
@@ -74,6 +75,7 @@ input:not([type="checkbox"]), select {
     flex-shrink: 0;
 }
 
+/* Hide default HTML checkbox */
 .switch input { opacity: 0; width: 0; height: 0; }
 
 .slider {
