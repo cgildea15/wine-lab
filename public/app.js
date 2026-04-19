@@ -1,4 +1,4 @@
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
 const formatIntegrity = (str) => {
     if (!str) return "";
@@ -7,9 +7,34 @@ const formatIntegrity = (str) => {
     ).join(' ');
 };
 
+// Function to fetch and display recent history
+const loadHistory = async () => {
+    const historyList = document.getElementById('history-list');
+    const q = query(collection(window.db, "wine_history"), orderBy("timestamp", "desc"), limit(5));
+    const querySnapshot = await getDocs(q);
+    
+    historyList.innerHTML = ""; // Clear current
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `
+            <div>
+                <strong>${data.label}</strong><br>
+                <small>${data.style} • ${data.vintage}</small>
+            </div>
+            <div><strong>${data.actualRating || '-'}</strong></div>
+        `;
+        historyList.appendChild(card);
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const wineForm = document.getElementById('wine-form');
     const predictBtn = document.getElementById('predict-btn');
+
+    // Load history on startup
+    loadHistory();
 
     wineForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -25,8 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const vintage = parseInt(document.getElementById('vintage').value) || 0;
             const price = parseFloat(document.getElementById('price').value) || 0;
             const notesRaw = document.getElementById('predictNotes').value;
-            
-            // New Integrated fields
             const actualRating = parseFloat(document.getElementById('actual-rating').value) || null;
             const buyAgain = document.getElementById('buyAgain').value === 'true';
 
@@ -44,12 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 dScore += 2.5; cScore -= 1.0;
             }
 
-            // 3. Save to Firebase (Single Step)
+            // 3. Save to Firebase
             await addDoc(collection(window.db, "wine_history"), {
                 label, purchaseLocation, style, vintage, price, sweetness,
                 tastingNotes: notesList,
-                actualRating: actualRating,
-                buyAgain: buyAgain,
+                actualRating,
+                buyAgain,
                 predictedColleen: parseFloat(cScore.toFixed(1)), 
                 predictedDave: parseFloat(dScore.toFixed(1)),
                 timestamp: new Date()
@@ -58,18 +81,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // 4. Update UI
             document.getElementById('c-score-val').innerText = cScore.toFixed(1);
             document.getElementById('d-score-val').innerText = dScore.toFixed(1);
-            
-            // Show the results section
             document.getElementById('results').style.display = "block";
-            predictBtn.innerText = "Logged to Lab ✅";
             
+            predictBtn.disabled = false;
+            predictBtn.innerText = "Predict & Log Rating";
+            
+            // Refresh history list
+            loadHistory();
             alert("Prediction saved to your lab!");
 
         } catch (err) {
             console.error("Lab Error:", err);
             predictBtn.disabled = false;
             predictBtn.innerText = "Predict & Log Rating";
-            alert("Error in the lab! Check your console.");
+            alert("Error in the lab!");
         }
     });
 });
