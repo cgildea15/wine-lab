@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Wine Predictor</title>
-    
     <meta name="theme-color" content="#722f37">
-    <meta name="description" content="Personalized wine value and quality predictor.">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,57 +18,28 @@
                 <input type="text" id="labelName" required placeholder="e.g. Domaine Weinbach Muscat">
             </div>
 
-            <div class="input-group">
-                <label for="purchaseLocation">Purchase Location</label>
-                <select id="purchaseLocation">
-                    <option value="retail">🏪 Store / Online</option>
-                    <option value="restaurant">🍴 Restaurant / Bar</option>
-                    <option value="vineyard">🍇 Direct from Vineyard</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label>Sweetness Level</label>
-                <select id="sweetness">
-                    <option value="dry">🌵 Dry</option>
-                    <option value="off-dry">🍑 Off-Dry (Balanced)</option>
-                    <option value="sweet">🍯 Sweet </option>
-                    <option value="dessert">🍷 Dessert / Fortified </option>
-                </select>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="purchaseLocation">Location</label>
+                    <select id="purchaseLocation">
+                        <option value="retail">🏪 Store</option>
+                        <option value="restaurant">🍴 Restaurant</option>
+                        <option value="vineyard">🍇 Vineyard</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="sweetness">Sweetness</label>
+                    <select id="sweetness">
+                        <option value="dry">🌵 Dry</option>
+                        <option value="off-dry">🍑 Off-Dry</option>
+                        <option value="sweet">🍯 Sweet</option>
+                    </select>
+                </div>
             </div>
 
             <div class="input-group">
                 <label for="wineStyle">Style / Blend</label>
-                <input type="text" id="wineStyle" list="style-options" placeholder="e.g. White, Chardonnay">
-                <datalist id="style-options">
-                    <option value="Cabernet Sauvignon">
-                    <option value="Chardonnay">
-                    <option value="Riesling">
-                    <option value="Sauvignon Blanc">
-                    <option value="Pinot Noir">
-                    <option value="Merlot">
-                    <option value="Rosé">
-                    <option value="Sparkling">
-                </datalist>
-            </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="temp">Serving Temp</label>
-                    <select id="temp">
-                        <option value="chilled">❄️ Chilled</option>
-                        <option value="room">🌡️ Room Temp</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="setting">Environment & Timing</label>
-                    <select id="setting">
-                        <option value="afternoon_outdoors">☀️ Afternoon / Outdoors</option>
-                        <option value="evening_outdoors">🌙 Evening / Outdoors</option>
-                        <option value="afternoon_indoors">🏠 Afternoon / Indoors</option>
-                        <option value="evening_indoors">🍷 Evening / Indoors</option>
-                    </select>
-                </div>
+                <input type="text" id="wineStyle" placeholder="e.g. White, Chardonnay">
             </div>
 
             <div class="input-row">
@@ -79,18 +48,23 @@
                     <input type="number" id="vintage" placeholder="2021">
                 </div>
                 <div class="input-group">
-                    <label for="abv">ABV %</label>
-                    <input type="number" id="abv" step="0.1" placeholder="13.5">
-                </div>
-                <div class="input-group">
                     <label for="price">Price ($)</label>
                     <input type="number" id="price" step="0.01" placeholder="21.99">
                 </div>
             </div>
 
-            <div class="input-group">
-                <label for="region">Region(s)</label>
-                <input type="text" id="region" placeholder="e.g. Italy, Sicily">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="actual-rating">My Rating (1-10)</label>
+                    <input type="number" id="actual-rating" min="1" max="10" step="0.1" placeholder="0.0">
+                </div>
+                <div class="input-group">
+                    <label>Would Buy Again?</label>
+                    <select id="buyAgain">
+                        <option value="true">✅ Yes</option>
+                        <option value="false">❌ No</option>
+                    </select>
+                </div>
             </div>
 
             <div class="input-group">
@@ -98,46 +72,19 @@
                 <input type="text" id="predictNotes" placeholder="e.g. Saline, Pineapple, Vanilla">
             </div>
 
-            <div class="input-group">
-                <label for="foodPairing">Food Pairing</label>
-                <input type="text" id="foodPairing" placeholder="e.g. Chips, No food">
-            </div>
-
-            <button type="submit" id="predict-btn">Predict Our Scores</button>
+            <button type="submit" id="predict-btn">Predict & Log Rating</button>
         </form>
 
         <section id="results">
             <div class="score-container">
                 <div class="score-card dry-card">
-                    <span class="score-label">OLD WORLD CRISP</span>
+                    <span class="score-label">COLLEEN PREDICT</span>
                     <div id="c-score-val">--</div>
                 </div>
                 <div class="score-card fruit-card">
-                    <span class="score-label">FRUITY & SMOOTH</span>
+                    <span class="score-label">DAVE PREDICT</span>
                     <div id="d-score-val">--</div>
                 </div>
-            </div>
-
-            <div id="feedback-section" style="display:none;">
-                <h3>Actual Tasting Results</h3>
-                <div class="input-group">
-                    <label for="actual-rating">Final Lab Rating (1-10)</label>
-                    <input type="number" id="actual-rating" min="1" max="10" step="0.1">
-                </div>
-                
-                <div class="toggle-group">
-                    <label class="switch">
-                        <input type="checkbox" id="buyAgain">
-                        <span class="slider"></span>
-                    </label>
-                    <label for="buyAgain" class="toggle-label">WOULD BUY AGAIN?</label>
-                </div>
-
-                <div class="input-group">
-                    <label for="user-name">Who is tasting?</label>
-                    <input type="text" id="user-name" placeholder="Colleen, Dave">
-                </div>
-                <button id="save-rating">Confirm & Save to Lab</button>
             </div>
         </section>
 
@@ -147,9 +94,15 @@
         </section>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+      // Ensure your config.js exports firebaseConfig, or paste it here:
+      import { firebaseConfig } from "./config.js"; 
+      
+      const app = initializeApp(firebaseConfig);
+      window.db = getFirestore(app);
+    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
